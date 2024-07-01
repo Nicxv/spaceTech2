@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from spacetech import settings
 from . import views
 from django.urls import path
-from .views import CustomPasswordResetConfirmView,  enviar_publicidad
+from .views import CustomPasswordResetConfirmView, crear_proveedor,  enviar_publicidad
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
@@ -90,7 +90,7 @@ urlpatterns = [
     path('actualizar_cantidad_llegada/', actualizar_cantidad_llegada, name='actualizar_cantidad_llegada'),
 
    
-    
+    path('crear-proveedor/', crear_proveedor, name='crear_proveedor'),
 
     
     

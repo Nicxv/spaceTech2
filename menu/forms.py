@@ -76,4 +76,32 @@ class LoginForm(forms.Form):
     email = forms.EmailField(label='Email', max_length=254, widget=forms.EmailInput(attrs={'class': 'form-control'}))
     password = forms.CharField(label='Contraseña', widget=forms.PasswordInput(attrs={'class': 'form-control'}))   
 
+from .models import Proveedor
 
+class ProveedorForm(forms.ModelForm):
+    class Meta:
+        model = Proveedor
+        fields = '__all__'
+class ProveedorForm(forms.ModelForm):
+    class Meta:
+        model = Proveedor
+        fields = [
+            'rut_empresa', 'nombre_empresa', 'representante_legal',
+            'contacto_empresa', 'direccion_proveedor', 'email_proveedor'
+        ]
+
+
+from .models import Producto
+from django import forms
+from .models import Producto
+
+from django import forms
+from .models import Producto
+
+class ProductoForm(forms.ModelForm):
+    class Meta:
+        model = Producto
+        fields = ['nombre_producto', 'foto_producto', 'precio_costo']
+        widgets = {
+            'foto_producto': forms.FileInput(),  # Asegura que se use el widget correcto para la carga de archivos
+        }

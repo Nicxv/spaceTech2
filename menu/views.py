@@ -907,10 +907,17 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 
+from .forms import ProveedorForm
 
-
-
-
+def crear_proveedor(request):
+    if request.method == 'POST':
+        form = ProveedorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('proveedor_creado')  # Asumiendo que tienes una URL de confirmación
+    else:
+        form = ProveedorForm()
+    return render(request, '', {'form': form})
 
 
 

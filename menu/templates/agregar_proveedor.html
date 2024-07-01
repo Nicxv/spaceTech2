@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Proveedor</title>
+</head>
+<body>
+    <h1>Agregar Nuevo Proveedor</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar Proveedor</button>
+    </form>
+</body>
+</html>
+
