@@ -204,7 +204,7 @@ def formulario(request):
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import Articulos, Comuna
-from .forms import ArticulosForm
+from .forms import ArticulosForm, UpdateProfileForm
 
 def agregar_producto(request):
     if request.method == 'POST':
@@ -879,11 +879,6 @@ def detalle_venta_ajax(request, venta_id):
     html = render_to_string('detalle_venta_ajax.html', {'venta': venta, 'detalles': detalles})
     return HttpResponse(html)
 
-def detalle_venta_ajax(request, venta_id):
-    venta = get_object_or_404(Venta, id=venta_id)
-    detalles = DetalleVenta.objects.filter(venta=venta)
-    html = render_to_string('detalle_venta_ajax.html', {'venta': venta, 'detalles': detalles})
-    return HttpResponse(html)
 
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.http import require_POST
@@ -918,6 +913,10 @@ def crear_proveedor(request):
     else:
         form = ProveedorForm()
     return render(request, '', {'form': form})
+
+def recepcion_proveedor(request):
+    return render(request, 'recepcion_proveedor')
+
 
 
 

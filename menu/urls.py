@@ -60,19 +60,6 @@ urlpatterns = [
 
 
 
-
-
-
-
-    
-
-
-
-   
-    
-  
-
-
     path('webpay/iniciar/', views.iniciar_pago, name='iniciar_pago'),
     path('webpay/retorno/', views.retorno_pago, name='retorno_pago'),
 
@@ -91,6 +78,8 @@ urlpatterns = [
 
    
     path('crear-proveedor/', crear_proveedor, name='crear_proveedor'),
+    path('recepcion_proveedor/', views.recepcion_proveedor, name='recepcion_proveedor')
+
 
     
     
