@@ -1,0 +1,53 @@
+
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .product-img {
+            width: 70px;
+            height: auto;
+            margin-right: 15px;
+        }
+        .product-details {
+            flex-grow: 1;
+        }
+        .product-name {
+            font-weight: bold;
+        }
+        .total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: right;
+            color: #4a4a4a;
+        }
+        .btn-finalizar {
+            margin-top: 20px;
+            float: right;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .delivery-options {
+            margin-bottom: 20px;
+        }
+        .delivery-options input {
+            margin-right: 10px;
+        }
+        .delivery-address {
+            margin-top: 20px;
+        }
+        .datepicker-container {
+            margin-top: 20px;
+        }
+        .date-options {
+            display: none;
+            margin-top: 20px;
+        }

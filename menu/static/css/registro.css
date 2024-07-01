@@ -1,0 +1,100 @@
+
+body {
+    background: url("{% static 'menu/static/img/pexels-photo-9072292.webp' %}") no-repeat center center fixed;
+    background-size: cover;
+    color: #fff; /* Texto blanco */
+    font-family: 'Arial', sans-serif; /* Fuente predeterminada */
+}
+
+.card {
+    background-color: rgba(0, 0, 0, 0.7);
+    border: none;
+    color: #fff;
+    border-radius: 15px;
+    box-shadow: none;
+    margin-top: 50px;
+}
+
+.card-header {
+    background: none;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.form-control {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 5px;
+    color: #212529; /* Texto negro */
+    height: calc(2.5rem + 2px);
+    font-size: 1rem; /* Tamaño de fuente */
+}
+
+.form-control:focus {
+    background-color: #fff;
+    border-color: #8C52FF;
+    box-shadow: none;
+}
+
+.btn-primary {
+    background-color: #8C52FF; /* Color principal */
+    border: none;
+    padding: 12px 30px; /* Espacio interno */
+    font-size: 1rem;
+    transition: background-color 0.3s ease; /* Transición suave */
+}
+
+.btn-primary:hover {
+    background-color: #6f42c1; /* Color hover */
+}
+
+.warnings {
+    color: #dc3545; /* Color de advertencia */
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+@media (min-width: 768px) {
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* Espacio entre elementos */
+    }
+
+    .form-column {
+        flex: 0 0 calc(50% - 10px); /* Dos columnas con espacio */
+        margin-bottom: 15px;
+    }
+
+    .direccion-wrapper {
+        flex: 0 0 calc(50% - 10px); /* Dirección con espacio */
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 767px) {
+    .direccion-wrapper {
+        margin-top: 20px;
+    }
+}
+
+/* Icono para mostrar/ocultar contraseña */
+.password-wrapper {
+    position: relative;
+}
+
+.password-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #ccc;
+}
+
+.password-icon:hover {
+    color: #8C52FF;
+}

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Registro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+
+        .card {
+            background-color: var(--card-bg-color);
+            border: none;
+            color: var(--card-text-color);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        .card-header {
+            background: var(--primary-color);
+            border-bottom: none;
+            padding-bottom: 0;
+            color: #fff;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .form-control {
+            background-color: var(--input-bg-color);
+            border: 1px solid var(--input-border-color);
+            color: var(--input-text-color);
+            border-radius: 5px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .form-control:focus {
+            background-color: #fff;
+            border-color: var(--input-border-color);
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.875rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #6f42c1;
+        }
+
+        .warnings {
+            color: #dc3545;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .form-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .form-column {
+                flex: 0 0 calc(50% - 7.5px);
+                margin-bottom: 10px;
+            }
+
+            .direccion-wrapper {
+                flex: 0 0 calc(50% - 7.5px);
+                margin-top: 0;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .direccion-wrapper {
+                margin-top: 15px;
+            }
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #ccc;
+        }
+
+        .password-icon:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    {% include "plantilla/menu.html" %}
+   
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="card p-4 col-md-8 col-lg-6">
+                <div class="card-header text-center">
+                    <h3>Formulario de Registro</h3>
+                </div>
+                <div class="card-body">
+                    <form action="" method="post" id="form">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-column">
+                                <div class="form-group">
+                                    <label for="nombre_usuario"><i class="fa-solid fa-user"></i> Nombre de Usuario</label>
+                                    <input type="text" name="nombre_usuario" id="nombre_usuario" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="nombre"><i class="fa-solid fa-person"></i> Nombre</label>
+                                    <input type="text" name="nombre" id="nombre" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="apellido"><i class="fa-solid fa-person"></i> Apellido</label>
+                                    <input type="text" name="apellido" id="apellido" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
+                                    <input type="email" name="email" id="email" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="tfno"><i class="fa-solid fa-phone"></i> Teléfono</label>
+                                    <input type="tel" placeholder="+569" name="tfno" id="tfno" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="clave"><i class="fa-solid fa-lock"></i> Contraseña</label>
+                                    <div class="password-wrapper">
+                                        <input type="password" name="clave" id="clave" class="form-control">
+                                        <span class="password-icon" onclick="togglePassword('clave')">
+                                            <i class="fa-solid fa-eye-slash"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirmar_clave"><i class="fa-solid fa-lock"></i> Confirmar Contraseña</label>
+                                    <div class="password-wrapper">
+                                        <input type="password" name="confirmar_clave" id="confirmar_clave" class="form-control">
+                                        <span class="password-icon" onclick="togglePassword('confirmar_clave')">
+                                            <i class="fa-solid fa-eye-slash"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="direccion-wrapper">
+                                <div class="form-group">
+                                    <label for="direccion"><i class="fa-solid fa-map-marker-alt"></i> Dirección</label>
+                                    <input type="text" name="direccion" id="autocomplete" class="form-control">
+                                </div>
+                                <div id="map" style="height: 300px; width: 100%; margin-top: 10px;"></div>
+                            </div>
+                        </div>
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-primary" id="btn_alerta">Enviar</button>
+                            <p class="warnings" id="warnings"></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/registro.js'%}"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUjMYm_HVdhncKSb4nvc8e4Br3-pbfbfc&callback=initAutocomplete&libraries=places&region=CL" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://kit.fontawesome.com/32b703ccc5.js" crossorigin="anonymous"></script>
+</body>
+</html>

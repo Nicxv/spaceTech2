@@ -1,0 +1,32 @@
+{% load custom_filters %}
+<div>
+    <h4>Información de la Venta</h4>
+    <p><strong>ID Boleta:</strong> {{ venta.id_boleta }}</p>
+    <p><strong>Cliente:</strong> {{ venta.usuario.nombre_usuario }}</p>
+    <p><strong>Fecha:</strong> {{ venta.fecha }}</p>
+    <p><strong>Subtotal:</strong> {{ venta.subtotal|format_price }}</p>
+    <p><strong>IVA:</strong> {{ venta.iva|format_price }}</p>
+    <p><strong>Total:</strong> {{ venta.total|format_price }}</p>
+
+    <h4 class="mt-4">Detalles de los Productos</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detalle in detalles %}
+            <tr>
+                <td>{{ detalle.articulo.nombre }}</td>
+                <td>{{ detalle.cantidad }}</td>
+                <td>{{ detalle.precio_unitario|format_price }}</td>
+                <td>{{ detalle.total|format_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,62 @@
+
+body {
+  background-color: #121212; /* Color de fondo negro */
+  color: #fff; /* Color de texto blanco */
+}
+.card-custom {
+  max-width: 100%;
+  margin: auto;
+  background-color: #1e1e1e; /* Fondo oscuro para las tarjetas */
+  border: 1px solid #2a2a2a; /* Borde oscuro */
+}
+.card-title, h1, h2 {
+  color: #bb86fc; /* Color morado claro */
+}
+.btn-primary {
+  background-color: #bb86fc;
+  border: none;
+}
+.btn-primary:hover {
+  background-color: #9b59b6; /* Color morado oscuro */
+}
+.table thead th {
+  background-color: #bb86fc; /* Color morado claro para las cabeceras de las tablas */
+  color: #121212; /* Color de texto oscuro para las cabeceras de las tablas */
+}
+.dashboard-card {
+  margin: 10px 0;
+  padding: 20px;
+  border: 1px solid #2a2a2a;
+  border-radius: 5px;
+  background-color: #1e1e1e;
+}
+.dashboard-cards {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.dashboard-card {
+  flex: 1 1 calc(33.333% - 10px);
+  margin: 5px;
+}
+.orders-table, .table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  color: #fff;
+}
+.orders-table th, .orders-table td, .table th, .table td {
+  border: 1px solid #2a2a2a;
+  padding: 8px;
+}
+.orders-table th, .table th {
+  background-color: #bb86fc;
+  color: #121212;
+}
+.products-list li {
+  list-style-type: none;
+  padding: 8px;
+  border: 1px solid #2a2a2a;
+  margin-bottom: 5px;
+  background-color: #1e1e1e;
+}

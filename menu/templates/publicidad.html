@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicidad</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            background-image: url('/menu/static/img/pexels-photo-9072292.webp'); /* Ruta de la imagen de fondo */
+            background-size: cover; /* Cubrir toda la ventana del navegador */
+            background-position: center; /* Centrar la imagen */
+            color: white; /* Color del texto */
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+            padding: 20px; /* Espaciado interior */
+        }
+        .responsive-img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+    {% include "plantilla/menu.html" %}
+    <div style="color: white;" class="container mt-5">
+        <h1 class="mb-4">Añadir Publicidad</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <form action="{% url 'publicidad' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="imagen" class="form-label">Imagen de la Publicidad</label>
+                        <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="precio" class="form-label">Precio</label>
+                        <input type="text" class="form-control" id="precio" name="precio" placeholder="Precio por tiempo (en CLP)" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tiempo"  class="form-label">Tiempo de Publicación</label>
+                        <select class="form-select" id="tiempo" name="tiempo" required onchange="updatePrice(this.value)">
+                            <option value="1">1 Semana</option>
+                            <option value="2">2 Semanas</option>
+                            <option value="4">1 Mes</option>
+                            <option value="12">3 Meses</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="segundos" class="form-label">Segundos de Duración</label>
+                        <select class="form-select" id="segundos" name="segundos" required onchange="updatePrice(tiempo.value, this.value)">
+                            <option value="1">1 Segundo</option>
+                            <option value="2">2 Segundos</option>
+                            <option value="3">3 Segundos</option>
+                            <option value="4">4 Segundos</option>
+                            <!-- Añade más opciones según sea necesario -->
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary"> Enviar Solicitud de publicidad</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    
+                    <div class="card-body"> Ejemplo de publicidad
+                        <img src="/menu/static/img/aaa.png" class="img-fluid" alt="Ejemplo de Publicidad">
+                        <p class="mt-3">Precio: <span id="displayPrice">$</span> clp</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <script>
+    function updatePrice(tiempo, segundos) {
+        var precioBase = 3000; // Precio base en pesos chilenos
+        if (tiempo == 2) {
+            precioBase *= 2; // Duplica el precio para 2 semanas
+        } else if (tiempo == 4) {
+            precioBase *= 4; // Cuadruplica el precio para 1 mes
+        } else if (tiempo == 12) {
+            precioBase *= 12; // Multiplica el precio por 12 para 3 meses
+        }
+
+        // Calcula el precio total basado en la duración en segundos
+        var precioTotal = precioBase * segundos / 15; // Ajusta el precio en función de la relación 15 segundos = $100
+        
+        // Actualiza el precio mostrado en el formulario
+        document.getElementById('precio').value = precioTotal;
+        document.getElementById('displayPrice').innerText = '$' + precioTotal;
+    }
+</script>
+</body>
+</html>

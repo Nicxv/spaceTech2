@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+{% load custom_filters %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proceso de Compra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="{% static 'css/venta_productos.css' %}">
+    <meta name="iniciar-pago-url" content="{% url 'iniciar_pago' %}">
+</head>
+<body>
+    {% include "plantilla/menu.html" %}
+
+    <div class="container">
+        <h2 class="mb-4">Proceso de Compra</h2>
+        <div class="card">
+            <div class="card-body">
+                <h3 class="section-title">Opciones de Entrega</h3>
+                <div class="delivery-options">
+                    <div>
+                        <input type="radio" id="retiro_local" name="delivery_option" value="retiro_local">
+                        <label for="retiro_local">Retiro en local</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="envio_domicilio" name="delivery_option" value="envio_domicilio">
+                        <label for="envio_domicilio">Envío a domicilio</label>
+                    </div>
+                </div>
+                <div id="direccion_local" class="delivery-address" style="display: none;">
+                    Dirección del local: <strong>Av. Principal 123, Ciudad</strong>
+                </div>
+                <div id="direccion_cliente" class="delivery-address" style="display: none;">
+                    Dirección de envío: <input type="text" class="form-control" id="direccion" name="direccion" value="{{ direccion }}">
+                    <div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+                    <button id="guardar_direccion" class="btn btn-success mt-2">Confirmar Dirección</button>
+                </div>
+                <div id="precio_envio" class="mt-2"></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h3 class="section-title">Resumen de Productos</h3>
+                {% for item in items %}
+                <div class="d-flex align-items-center">
+                    <img src="{{ item.producto.foto.url }}" alt="{{ item.producto.nombre }}" class="product-img">
+                    <div class="product-details">
+                        <div class="product-name">{{ item.producto.nombre }}</div>
+                        <div>{{ item.producto.marca }}</div>
+                        <div>Cantidad: {{ item.cantidad }}</div>
+                        <div>Precio: {{ item.producto.precio|format_price }}</div>
+                        <div>Subtotal: {{ item.producto.precio|multiply:item.cantidad|format_price }}</div>
+                    </div>
+                </div>
+                <hr>
+                {% endfor %}
+                <div class="d-flex justify-content-between">
+                    <strong>Subtotal:</strong>
+                    <span>{{ subtotal|format_price }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <strong>IVA (19%):</strong>
+                    <span>{{ iva|format_price }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <strong>Total:</strong>
+                    <span>{{ total|format_price }}</span>
+                </div>
+                <div>
+                    <p>Fecha de entrega: <span id="fecha_entrega_seleccionada">No seleccionada</span></p>
+                    <button id="cambiar_fecha" class="btn btn-secondary">Cambiar fecha</button>
+                </div>
+                <div class="date-options" style="display: none;">
+                    <label for="fecha_entrega">Selecciona la fecha de entrega:</label>
+                    <input type="text" id="fecha_entrega" class="form-control">
+                    <button id="confirmar_fecha" class="btn btn-success mt-2">Confirmar fecha</button>
+                </div>
+                <div class="total" data-total="{{ total }}">Total: {{ total|format_price }}</div>
+                <a id="btn-finalizar" href="#" class="btn btn-primary btn-finalizar">Ir a pagar</a>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/ventas.js' %}"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUjMYm_HVdhncKSb4nvc8e4Br3-pbfbfc&callback=initMap&libraries=places" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/js/bootstrap.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
