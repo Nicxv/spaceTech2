@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from menu.forms import ArticulosForm, LoginForm, Usuario2Form, UsuarioForm
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from django.contrib.auth import authenticate, login as auth_login, logout
 
@@ -13,17 +13,12 @@ from menu.models import Articulos, Carrito, CarritoItem, Usuario, Venta, Detalle
 
 # Create your views here.
 from django.shortcuts import render
-from .models import RecepcionProducto
+
 
 def home_view(request):
-    productos = RecepcionProducto.objects.filter(en_resumen=True)
-
-    # Asegurarnos de que todos los productos tengan un precio_venta válido
-    for producto in productos:
-        if not isinstance(producto.precio_venta, (int, float, Decimal)):
-            producto.precio_venta = Decimal('0.0')
     
-    return render(request, 'home.html', {'productos': productos})
+    
+    return render(request, 'home.html', )
 
 def busqueda_productos(request):
 
@@ -113,16 +108,7 @@ def profile_view(request):
         return redirect('login')
 
 # views.py
-from django.shortcuts import render, get_object_or_404
-from .models import RecepcionProducto
 
-# views.py
-from django.shortcuts import render, get_object_or_404
-from .models import RecepcionProducto
-
-def detalle_producto(request, id):
-    producto = get_object_or_404(RecepcionProducto, pk=id)
-    return render(request, 'detalle_producto.html', {'producto': producto})
 
 
 
@@ -172,10 +158,6 @@ def editar_usuario(request, usuario_id):
         form = Usuario2Form(instance=usuario)
     return render(request, 'editar_usuario.html', {'form': form, 'usuario': usuario})
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .models import Articulos, Comuna, RecepcionProducto
-from .forms import ArticulosForm, UpdateProfileForm
 
 def modificarP(request, producto_id):
     producto = get_object_or_404(Articulos, id=producto_id)
@@ -221,7 +203,7 @@ def formulario(request):
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import Articulos
+from .models import Articulos, Comuna
 from .forms import ArticulosForm
 
 def agregar_producto(request):
@@ -236,18 +218,7 @@ def agregar_producto(request):
         form = ArticulosForm()
     return render(request, 'agregarP.html', {'form': form})
 
-from django.shortcuts import render, get_object_or_404
-from .models import RecepcionProducto, Carrito, CarritoItem
 
-def detalle_producto(request, producto_id):
-    producto = get_object_or_404(RecepcionProducto, id=producto_id)
-    
-    carrito_items_count = 0
-    if request.user.is_authenticated:
-        carrito, created = Carrito.objects.get_or_create(usuario=request.user)
-        carrito_items_count = CarritoItem.objects.filter(carrito=carrito).count()
-    
-    return render(request, 'detalle_producto.html', {'producto': producto, 'carrito_items_count': carrito_items_count})
 
 
 def eliminar_producto(request, producto_id):
@@ -517,428 +488,7 @@ def calcular_precio_envio(request):
         return JsonResponse({'status': 'error', 'message': 'Método no permitido'})    
     
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Proveedor
-from .forms import ProveedorForm
 
-def is_admin(user):
-    return user.is_authenticated and user.is_staff
-
-@login_required
-@user_passes_test(is_admin)
-def proveedor_list(request):
-    proveedores = Proveedor.objects.all()
-    return render(request, 'proveedor_list.html', {'proveedores': proveedores})
-
-@login_required
-@user_passes_test(is_admin)
-def proveedor_add(request):
-    if request.method == 'POST':
-        form = ProveedorForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('proveedor_list')
-    else:
-        form = ProveedorForm()
-    return render(request, 'proveedor_form.html', {'form': form})
-
-@login_required
-@user_passes_test(is_admin)
-def proveedor_edit(request, pk):
-    proveedor = get_object_or_404(Proveedor, pk=pk)
-    if request.method == 'POST':
-        form = ProveedorForm(request.POST, instance=proveedor)
-        if form.is_valid():
-            form.save()
-            return redirect('proveedor_list')
-    else:
-        form = ProveedorForm(instance=proveedor)
-    return render(request, 'proveedor_form.html', {'form': form})
-
-@login_required
-@user_passes_test(is_admin)
-def proveedor_delete(request, pk):
-    proveedor = get_object_or_404(Proveedor, pk=pk)
-    if request.method == 'POST':
-        proveedor.delete()
-        return redirect('proveedor_list')
-    return render(request, 'proveedor_confirm_delete.html', {'proveedor': proveedor})
-
-
-# Clave de google maps api
-# <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUjMYm_HVdhncKSb4nvc8e4Br3-pbfbfc&callback=initMap&libraries=places" async defer></script>
-# AIzaSyAUjMYm_HVdhncKSb4nvc8e4Br3-pbfbfc
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Proveedor, ProductosProveedor
-from .forms import ProductosProveedorForm
-
-def agregar_producto_proveedor(request, proveedor_id):
-    proveedor = get_object_or_404(Proveedor, id_proveedor=proveedor_id)
-    if request.method == 'POST':
-        form = ProductosProveedorForm(request.POST, request.FILES)
-        if form.is_valid():
-            producto_proveedor = form.save(commit=False)
-            producto_proveedor.proveedor = proveedor
-            producto_proveedor.save()
-            return redirect('detalle_proveedor', proveedor_id=proveedor.id_proveedor)
-    else:
-        form = ProductosProveedorForm()
-    return render(request, 'agregar_producto_proveedor.html', {'form': form, 'proveedor': proveedor})
-
-def detalle_proveedor(request, proveedor_id):
-    proveedor = get_object_or_404(Proveedor, id_proveedor=proveedor_id)
-    productos = ProductosProveedor.objects.filter(proveedor=proveedor)
-    return render(request, 'detalle_proveedor.html', {'proveedor': proveedor, 'productos': productos})
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Proveedor, ProductosProveedor
-from .forms import ProductosProveedorForm
-
-def editar_producto_proveedor(request, producto_id):
-    producto = get_object_or_404(ProductosProveedor, id=producto_id)
-    if request.method == 'POST':
-        form = ProductosProveedorForm(request.POST, request.FILES, instance=producto)
-        if form.is_valid():
-            form.save()
-            return redirect('detalle_proveedor', proveedor_id=producto.proveedor.id_proveedor)
-    else:
-        form = ProductosProveedorForm(instance=producto)
-    return render(request, 'editar_producto_proveedor.html', {'form': form, 'producto': producto})
-
-def eliminar_producto_proveedor(request, producto_id):
-    producto = get_object_or_404(ProductosProveedor, id=producto_id)
-    proveedor_id = producto.proveedor.id_proveedor
-    if request.method == 'POST':
-        producto.delete()
-        return redirect('detalle_proveedor', proveedor_id=proveedor_id)
-    return render(request, 'eliminar_producto_proveedor.html', {'producto': producto})
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Proveedor, ProductosProveedor
-
-def comprar_productos_proveedor(request, proveedor_id):
-    proveedor = get_object_or_404(Proveedor, id_proveedor=proveedor_id)
-    productos = ProductosProveedor.objects.filter(proveedor=proveedor)
-    return render(request, 'comprar_productos_proveedor.html', {'proveedor': proveedor, 'productos': productos})
-
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import ProveedorCarrito, ProveedorCarritoItem, ProductosProveedor
-from django.contrib.auth.decorators import login_required
-
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import ProveedorCarrito, ProveedorCarritoItem, ProductosProveedor
-from django.contrib.auth.decorators import login_required
-
-@login_required
-def comprar_producto(request, producto_id):
-    producto = get_object_or_404(ProductosProveedor, id=producto_id)
-    carrito, created = ProveedorCarrito.objects.get_or_create(usuario=request.user)
-    item, item_created = ProveedorCarritoItem.objects.get_or_create(carrito=carrito, producto=producto)
-
-    if not item_created:
-        item.cantidad += 1
-        item.save()
-
-    return redirect('proveedor_carrito')
-
-
-
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import ProveedorCarrito, ProveedorCarritoItem, ProductosProveedor
-from django.contrib.auth.decorators import login_required
-
-@login_required
-def proveedor_carrito(request):
-    carrito, created = ProveedorCarrito.objects.get_or_create(usuario=request.user)
-    items = ProveedorCarritoItem.objects.filter(carrito=carrito)
-    total = sum(item.producto.precio_costo * item.cantidad for item in items)
-    return render(request, 'proveedor_carrito.html', {'carrito': carrito, 'items': items, 'total': total})
-
-@login_required
-def agregar_al_proveedor_carrito(request, producto_id):
-    producto = get_object_or_404(ProductosProveedor, id=producto_id)
-    carrito, created = ProveedorCarrito.objects.get_or_create(usuario=request.user)
-    item, item_created = ProveedorCarritoItem.objects.get_or_create(carrito=carrito, producto=producto)
-
-    if not item_created:
-        item.cantidad += 1
-        item.save()
-
-    return redirect('proveedor_carrito')
-
-@login_required
-def eliminar_del_proveedor_carrito(request, item_id):
-    item = get_object_or_404(ProveedorCarritoItem, id=item_id)
-    item.delete()
-    return redirect('proveedor_carrito')
-
-@login_required
-def aumentar_cantidad(request, item_id):
-    item = get_object_or_404(ProveedorCarritoItem, id=item_id)
-    item.cantidad += 1
-    item.save()
-    return redirect('proveedor_carrito')
-
-@login_required
-def disminuir_cantidad(request, item_id):
-    item = get_object_or_404(ProveedorCarritoItem, id=item_id)
-    if item.cantidad > 1:
-        item.cantidad -= 1
-        item.save()
-    return redirect('proveedor_carrito')
-
-
-
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .models import ProveedorCarrito, ProveedorCarritoItem
-
-@login_required
-def resumen_compra(request):
-    carrito, created = ProveedorCarrito.objects.get_or_create(usuario=request.user)
-    items = ProveedorCarritoItem.objects.filter(carrito=carrito, en_resumen=True)  # Filtrar solo los productos en resumen
-    total = sum(item.producto.precio_costo * item.cantidad for item in items)
-    
-    # Agrupar los productos por proveedor y calcular subtotales
-    items_by_proveedor = {}
-    subtotales_by_proveedor = {}
-    for item in items:
-        proveedor = item.producto.proveedor
-        if proveedor not in items_by_proveedor:
-            items_by_proveedor[proveedor] = []
-            subtotales_by_proveedor[proveedor] = 0
-        items_by_proveedor[proveedor].append(item)
-        subtotales_by_proveedor[proveedor] += item.producto.precio_costo * item.cantidad
-    
-    return render(request, 'resumen_compra.html', {
-        'items_by_proveedor': items_by_proveedor,
-        'subtotales_by_proveedor': subtotales_by_proveedor,
-        'total': total
-    })
-
-
-from fpdf import FPDF
-from io import BytesIO
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .models import ProveedorCarritoItem, Proveedor, ProveedorCarrito
-from django.core.mail import EmailMessage
-from django.conf import settings
-
-def format_price(value):
-    try:
-        value = float(value)
-        return "${:,.0f}".format(value).replace(',', '.')
-    except (ValueError, TypeError):
-        return value
-
-class PDF(FPDF):
-    def header(self):
-        self.image('static/img/your_logo.png', 10, 8, 33)  # Ajusta la ruta a tu imagen
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, 'Resumen de la Compra', 0, 1, 'C')
-        self.ln(10)
-
-    def footer(self):
-        self.set_y(-15)
-        self.set_font('Arial', 'I', 8)
-        self.cell(0, 10, f'Página {self.page_no()}', 0, 0, 'C')
-
-    def chapter_title(self, title):
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, title, 0, 1, 'L')
-        self.ln(5)
-
-    def chapter_body(self, body):
-        self.set_font('Arial', '', 12)
-        self.multi_cell(0, 10, body)
-        self.ln()
-
-    def add_table(self, items):
-        self.set_font('Arial', 'B', 12)
-        self.cell(60, 10, 'Producto', 1)
-        self.cell(30, 10, 'Precio', 1)
-        self.cell(30, 10, 'Cantidad', 1)
-        self.cell(40, 10, 'Subtotal', 1)
-        self.ln()
-
-        self.set_font('Arial', '', 12)
-        for item in items:
-            self.cell(60, 10, item.producto.nombre_producto, 1)
-            self.cell(30, 10, format_price(item.producto.precio_costo), 1)
-            self.cell(30, 10, str(item.cantidad), 1)
-            self.cell(40, 10, format_price(item.cantidad * item.producto.precio_costo), 1)
-            self.ln()
-
-    def add_total(self, subtotal):
-        self.ln(10)
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, f"Subtotal: {format_price(subtotal)}", 0, 1, 'R')
-@login_required
-def descargar_pdf(request, proveedor_id):
-    proveedor = get_object_or_404(Proveedor, id_proveedor=proveedor_id)  # Usar id_proveedor en lugar de id
-    carrito = get_object_or_404(ProveedorCarrito, usuario=request.user)
-    items = ProveedorCarritoItem.objects.filter(carrito=carrito, producto__proveedor=proveedor)
-
-    subtotal = sum(item.cantidad * item.producto.precio_costo for item in items)
-
-    pdf = PDF()
-    pdf.add_page()
-    pdf.chapter_title("Detalles del Proveedor")
-    pdf.chapter_body(f"Nombre de la Empresa: {proveedor.nombre_empresa}")
-    pdf.chapter_title("Detalles de los Productos")
-    pdf.add_table(items)
-    pdf.add_total(subtotal)
-
-    pdf_buffer = BytesIO()
-    pdf_buffer.write(pdf.output(dest='S').encode('latin1'))  # Generar el PDF y escribirlo en memoria como bytes
-    pdf_buffer.seek(0)  # Reposicionar al inicio del buffer
-
-    response = HttpResponse(pdf_buffer, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="resumen_compra_proveedor_{proveedor_id}.pdf"'
-
-    return response
-
-
-
-from django.core.mail import EmailMessage
-from django.conf import settings
-from io import BytesIO
-from fpdf import FPDF
-from .models import ProveedorCarritoItem, Proveedor, ProveedorCarrito
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-
-from fpdf import FPDF
-
-class PDF(FPDF):
-    def header(self):
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, 'Resumen de la Compra', 0, 1, 'C')
-        self.ln(10)
-
-    def footer(self):
-        self.set_y(-15)
-        self.set_font('Arial', 'I', 8)
-        self.cell(0, 10, f'Página {self.page_no()}', 0, 0, 'C')
-
-    def chapter_title(self, title):
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, title, 0, 1, 'L')
-        self.ln(5)
-
-    def chapter_body(self, body):
-        self.set_font('Arial', '', 12)
-        self.multi_cell(0, 10, body)
-        self.ln()
-
-    def add_table(self, items):
-        self.set_font('Arial', 'B', 12)
-        self.cell(60, 10, 'Producto', 1)
-        self.cell(30, 10, 'Precio', 1)
-        self.cell(30, 10, 'Cantidad', 1)
-        self.cell(40, 10, 'Subtotal', 1)
-        self.ln()
-
-        self.set_font('Arial', '', 12)
-        for item in items:
-            self.cell(60, 10, item.producto.nombre_producto, 1)
-            self.cell(30, 10, f"${item.producto.precio_costo:,.2f}", 1)
-            self.cell(30, 10, str(item.cantidad), 1)
-            self.cell(40, 10, f"${item.cantidad * item.producto.precio_costo:,.2f}", 1)
-            self.ln()
-
-    def add_total(self, subtotal):
-        self.ln(10)
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, f"Subtotal: ${subtotal:,.2f}", 0, 1, 'R')
-
-
-from io import BytesIO
-from django.core.mail import EmailMessage
-from django.conf import settings
-from fpdf import FPDF
-from .models import ProveedorCarritoItem, Proveedor, ProveedorCarrito
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-
-@login_required
-def aceptar_producto(request, proveedor_id):
-    proveedor = get_object_or_404(Proveedor, id_proveedor=proveedor_id)
-    carrito = get_object_or_404(ProveedorCarrito, usuario=request.user)
-    items = ProveedorCarritoItem.objects.filter(carrito=carrito, producto__proveedor=proveedor)
-
-    # Generar PDF
-    pdf = PDF()
-    pdf.add_page()
-    pdf.chapter_title("Detalles del Proveedor")
-    pdf.chapter_body(f"Nombre de la Empresa: {proveedor.nombre_empresa}")
-    pdf.add_table(items)
-    subtotal = sum(item.cantidad * item.producto.precio_costo for item in items)
-    pdf.add_total(subtotal)
-
-    pdf_buffer = BytesIO()
-    pdf_buffer.write(pdf.output(dest='S').encode('latin1'))
-    pdf_buffer.seek(0)
-
-    # Enviar email con el PDF adjunto
-    email = EmailMessage(
-        'Resumen de la Compra',
-        'Adjunto encontrará el resumen de la compra.',
-        settings.DEFAULT_FROM_EMAIL,
-        [proveedor.email_proveedor],
-    )
-    email.attach(f'resumen_compra_proveedor_{proveedor_id}.pdf', pdf_buffer.getvalue(), 'application/pdf')
-    email.send()
-
-    # Crear registros en RecepcionProducto y actualizar visibilidad en ProveedorCarritoItem
-    for item in items:
-        RecepcionProducto.objects.update_or_create(
-            carrito_item=item,
-            defaults={
-                'cantidad_llegada': 0,  # Puedes ajustar según la lógica de negocio
-                'confirmado': False,  # Suponiendo que inicialmente no está confirmado
-                'estado': 'en_recepcion',  # Actualizamos el estado
-                'precio_venta': 0.0,  # Valor por defecto para evitar errores
-                'marca': item.producto.nombre_producto,  # Puedes ajustar este valor si tienes un campo específico para la marca
-                'descripcion': item.producto.nombre_producto  # Puedes ajustar este valor si tienes un campo específico para la descripción
-            }
-        )
-        item.en_resumen = False  # Oculta el ítem del resumen de compra sin borrarlo
-        item.save()
-
-    messages.success(request, 'Resumen de compra enviado por email exitosamente.')
-    return redirect('proveedor_list')
-
-
-
-
-
-
-
-
-from django.views.decorators.http import require_POST
-
-
-from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-
-@login_required
-@require_POST
-def rechazar_producto(request, item_id):
-    item = get_object_or_404(ProveedorCarritoItem, id=item_id)
-    item.delete()
-    return JsonResponse({'success': True})
 
 
 
@@ -1337,7 +887,7 @@ def detalle_venta_ajax(request, venta_id):
 
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.http import require_POST
-from .models import ProveedorCarritoItem
+
 from django.contrib.auth.decorators import login_required
 
 @login_required
@@ -1355,62 +905,14 @@ def actualizar_cantidad_llegada(request):
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import ProveedorCarritoItem, Proveedor
-
-@login_required
-def recepcion_proveedor(request):
-    recepciones = RecepcionProducto.objects.filter(
-        carrito_item__carrito__usuario=request.user
-    ).select_related('carrito_item__producto', 'carrito_item__producto__proveedor')
-
-    return render(request, 'recepcion_proveedor.html', {'recepciones': recepciones})
-
-from django.http import JsonResponse
-from .models import RecepcionProducto
-
-def buscar_marca(request):
-    if request.is_ajax() and 'term' in request.GET:
-        qs = RecepcionProducto.objects.filter(marca__icontains=request.GET.get('term')).distinct()
-        marcas = list(qs.values_list('marca', flat=True))
-        return JsonResponse(marcas, safe=False)
-    return JsonResponse([], safe=False)
-
-from django.shortcuts import redirect
-from .models import RecepcionProducto
-
-
-from django.shortcuts import render, redirect
-from .models import RecepcionProducto
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 
 
 
 
 
-@login_required
-def publicar_productos(request):
-    if request.method == 'POST':
-        for item in RecepcionProducto.objects.filter(carrito_item__carrito__usuario=request.user, estado='en_recepcion'):
-            item_id_str = str(item.id)
-            cantidad_llegada = request.POST.get(f'cantidad_llegada_{item_id_str}')
-            precio_venta = request.POST.get(f'precio_venta_{item_id_str}')
-            marca = request.POST.get(f'marca_{item_id_str}')
-            descripcion = request.POST.get(f'descripcion_{item_id_str}')
-            publicar = request.POST.get(f'publicar_{item_id_str}')
 
-            item.cantidad_llegada = int(cantidad_llegada) if cantidad_llegada else item.cantidad_llegada
-            item.precio_venta = float(precio_venta) if precio_venta else item.precio_venta
-            item.marca = marca if marca else item.marca
-            item.descripcion = descripcion if descripcion else item.descripcion
 
-            if publicar == 'true':
-                if item.cantidad_llegada >= 1:
-                    item.estado = 'publicado'
-                    item.save()
-                else:
-                    messages.error(request, f'El producto {item.carrito_item.producto.nombre_producto} debe tener al menos 1 en cantidad llegada para ser publicado.')
 
-        return redirect('recepcion_proveedor')
-    else:
-        return redirect('recepcion_proveedor')
+
+
+

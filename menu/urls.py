@@ -3,12 +3,12 @@ from django.conf.urls.static import static
 from spacetech import settings
 from . import views
 from django.urls import path
-from .views import CustomPasswordResetConfirmView,  detalle_producto, enviar_publicidad
+from .views import CustomPasswordResetConfirmView,  enviar_publicidad
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
-from .views import proveedor_list, proveedor_add, proveedor_edit, proveedor_delete, iniciar_pago, confirmar_pago,buscar_marca
-from .views import actualizar_cantidad_llegada, recepcion_proveedor
+from .views import  iniciar_pago, confirmar_pago
+from .views import actualizar_cantidad_llegada
 
 urlpatterns = [
     path('', views.home_view, name='home'),
@@ -32,7 +32,7 @@ urlpatterns = [
     path('listaP/eliminar/<int:producto_id>/', views.eliminar_producto, name='eliminar_producto'),
     path('listaP/modificar/<int:producto_id>/', views.modificarP, name='modificarP'),
     
-    path('detalle_producto/<int:producto_id>/', detalle_producto, name='detalle_producto'),
+  
 
 
 
@@ -62,29 +62,15 @@ urlpatterns = [
 
 
 
-    path('proveedores/', proveedor_list, name='proveedor_list'),
-    path('proveedor/add/', proveedor_add, name='proveedor_add'),
-    path('proveedor/edit/<int:pk>/', proveedor_edit, name='proveedor_edit'),
-    path('proveedor/delete/<int:pk>/', proveedor_delete, name='proveedor_delete'),
 
-    path('proveedor/<int:proveedor_id>/', views.detalle_proveedor, name='detalle_proveedor'),
-    path('proveedor/<int:proveedor_id>/agregar_producto/', views.agregar_producto_proveedor, name='agregar_producto_proveedor'),
-    path('producto/<int:producto_id>/editar/', views.editar_producto_proveedor, name='editar_producto_proveedor'),
-    path('producto/<int:producto_id>/eliminar/', views.eliminar_producto_proveedor, name='eliminar_producto_proveedor'),
-    path('proveedor/<int:proveedor_id>/comprar_productos/', views.comprar_productos_proveedor, name='comprar_productos_proveedor'),
-    path('producto/<int:producto_id>/comprar/', views.comprar_producto, name='comprar_producto'),
+
+    
 
 
 
-    path('proveedor_carrito/', views.proveedor_carrito, name='proveedor_carrito'),
-    path('proveedor_carrito/agregar/<int:producto_id>/', views.agregar_al_proveedor_carrito, name='agregar_al_proveedor_carrito'),
-    path('proveedor_carrito/eliminar/<int:item_id>/', views.eliminar_del_proveedor_carrito, name='eliminar_del_proveedor_carrito'),
-    path('proveedor_carrito/aumentar/<int:item_id>/', views.aumentar_cantidad, name='aumentar_cantidad'),
-    path('proveedor_carrito/disminuir/<int:item_id>/', views.disminuir_cantidad, name='disminuir_cantidad'),
-    path('resumen_compra/', views.resumen_compra, name='resumen_compra'),
-    path('aceptar_producto/<int:proveedor_id>/', views.aceptar_producto, name='aceptar_producto'),
-    path('rechazar_producto/<int:item_id>/', views.rechazar_producto, name='rechazar_producto'),
-    path('descargar_pdf/<int:proveedor_id>/', views.descargar_pdf, name='descargar_pdf'),
+   
+    
+  
 
 
     path('webpay/iniciar/', views.iniciar_pago, name='iniciar_pago'),
@@ -100,13 +86,13 @@ urlpatterns = [
     path('gestion_ventas/', views.gestion_ventas, name='gestion_ventas'),
     path('detalle_venta_ajax/<int:venta_id>/', views.detalle_venta_ajax, name='detalle_venta_ajax'),    
     
-    path('recepcion_proveedor/', recepcion_proveedor, name='recepcion_proveedor'),
+    
     path('actualizar_cantidad_llegada/', actualizar_cantidad_llegada, name='actualizar_cantidad_llegada'),
 
-    path('buscar_marca/', buscar_marca, name='buscar_marca'),
+   
     
 
-    path('publicar_productos/', views.publicar_productos, name='publicar_productos'),
+    
     
 ]
 
