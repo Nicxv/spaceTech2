@@ -1,4 +1,5 @@
 from decimal import Decimal
+from io import BytesIO
 from pyexpat.errors import messages
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -880,26 +881,11 @@ def detalle_venta_ajax(request, venta_id):
     return HttpResponse(html)
 
 
-from django.shortcuts import redirect, render, get_object_or_404
-from django.views.decorators.http import require_POST
 
-from django.contrib.auth.decorators import login_required
-
-@login_required
-@require_POST
-def actualizar_cantidad_llegada(request):
-    for key, value in request.POST.items():
-        if key.startswith('cantidad_llegada_'):
-            item_id = key.split('_')[-1]
-            cantidad_llegada = int(value)
-            item = get_object_or_404(ProveedorCarritoItem, id=item_id)
-            item.cantidad_llegada = cantidad_llegada
-            item.save()
-    return redirect('recepcion_proveedor')
 
 
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+
 
 
 from .forms import ProveedorForm
@@ -909,13 +895,15 @@ def crear_proveedor(request):
         form = ProveedorForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('proveedor_creado')  # Asumiendo que tienes una URL de confirmación
+            return redirect('crear_proveedor')  # Redirige a la misma página para crear otro proveedor
     else:
         form = ProveedorForm()
-    return render(request, '', {'form': form})
+    return render(request, 'crear_proveedor.html', {'form': form})
 
-def recepcion_proveedor(request):
-    return render(request, 'recepcion_proveedor')
+
+
+
+
 
 
 

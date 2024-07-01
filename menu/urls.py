@@ -8,7 +8,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
 from .views import  iniciar_pago, confirmar_pago
-from .views import actualizar_cantidad_llegada
+
 
 urlpatterns = [
     path('', views.home_view, name='home'),
@@ -74,11 +74,11 @@ urlpatterns = [
     path('detalle_venta_ajax/<int:venta_id>/', views.detalle_venta_ajax, name='detalle_venta_ajax'),    
     
     
-    path('actualizar_cantidad_llegada/', actualizar_cantidad_llegada, name='actualizar_cantidad_llegada'),
+
 
    
-    path('crear-proveedor/', crear_proveedor, name='crear_proveedor'),
-    path('recepcion_proveedor/', views.recepcion_proveedor, name='recepcion_proveedor')
+    path('crear_proveedor/', crear_proveedor, name='crear_proveedor'),
+    
 
 
     
