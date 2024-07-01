@@ -113,7 +113,17 @@ class Imagen(models.Model):
         return f"Imagen de {self.articulo.nombre}"
     
 
-    
+class Proveedor(models.Model):
+    id_proveedor = models.AutoField(primary_key=True, editable=False)
+    rut_empresa = models.CharField(max_length=13, verbose_name='RUT de la Empresa')
+    nombre_empresa = models.CharField(max_length=100, verbose_name='Nombre de la Empresa')
+    representante_legal = models.CharField(max_length=100, verbose_name='Representante Legal', default="")
+    contacto_empresa = models.CharField(max_length=50, verbose_name='Contacto de la Empresa')
+    direccion_proveedor = models.CharField(max_length=255, verbose_name='Dirección', default="sin direccion")
+    email_proveedor = models.EmailField(max_length=70, unique=True, null=True, blank=True)
+
+    def str(self):
+        return self.nombre_empresa
 
 
 
@@ -121,4 +131,41 @@ class Imagen(models.Model):
 
 
 
+class Producto(models.Model):
+    id_producto = models.AutoField(primary_key=True, editable=False)
+    nombre_producto = models.CharField(max_length=100, verbose_name='Nombre del Producto')
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE, verbose_name='Proveedor')
+    stock_actual = models.IntegerField(verbose_name='Stock Actual', null=True, blank=True)
+    stock_minimo = models.IntegerField(verbose_name='Stock Mínimo', null=True, blank=True)
+    precio_costo = models.IntegerField(verbose_name='Precio de Costo')
+    precio_venta = models.IntegerField(verbose_name='Precio de Venta', default=0)
+    foto_producto = models.ImageField(upload_to='static/img/', verbose_name='Foto del Producto', null=True, blank=True)
 
+
+    def __str__(self):
+        return self.nombre_producto
+
+
+class Compra(models.Model):
+    id_orden_compra = models.UUIDField(primary_key=True, editable=False)
+    fecha = models.DateTimeField(auto_now_add=True)
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE, verbose_name='Proveedor')
+    sub_total = models.IntegerField()
+    iva = models.IntegerField()
+    total = models.IntegerField()
+
+    def __str__(self):
+        return f'Compra {self.id_orden_compra} - {self.proveedor.nombre_empresa}'  
+
+
+class DetalleCompra(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False)
+    orden_compra = models.ForeignKey(Compra, on_delete=models.CASCADE, verbose_name='Orden de Compra', related_name='detalles')
+    correlativo = models.IntegerField(verbose_name='Número Correlativo')
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, verbose_name='Producto')
+    cantidad = models.IntegerField()
+    precio_costo = models.IntegerField()
+    sub_total = models.IntegerField()
+
+    def __str__(self):
+        return f'Detalle {self.correlativo} de {self.orden_compra}'
