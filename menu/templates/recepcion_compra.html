@@ -23,6 +23,8 @@
                 </h2>
                 <div id="collapse{{ compra.id_orden_compra }}" class="accordion-collapse collapse" aria-labelledby="heading{{ compra.id_orden_compra }}" data-bs-parent="#accordionCompra">
                     <div class="accordion-body">
+                        <p><strong>Proveedor:</strong> {{ compra.proveedor.nombre_empresa }}</p>
+                        <p><strong>Email del Proveedor:</strong> {{ compra.proveedor.email_proveedor }}</p>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -51,9 +53,9 @@
                                 {% endfor %}
                             </tbody>
                         </table>
-                        <p>Subtotal: ${{ compra.sub_total }}</p>
-                        <p>IVA: ${{ compra.iva }}</p>
-                        <p>Total: ${{ compra.total }}</p>
+                        <p><strong>Subtotal:</strong> ${{ compra.sub_total }}</p>
+                        <p><strong>IVA:</strong> ${{ compra.iva }}</p>
+                        <p><strong>Total:</strong> ${{ compra.total }}</p>
                         <!-- Botones de Acción -->
                         <button class="btn btn-success" onclick="aceptarCompra('{{ compra.id_orden_compra }}')">Aceptar</button>
                         <form action="{% url 'eliminar_compra' compra.id_orden_compra %}" method="post" style="display:inline;">

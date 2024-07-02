@@ -1052,6 +1052,7 @@ def recepcion_compra(request):
     compras = Compra.objects.all().order_by('-fecha')
     return render(request, 'recepcion_compra.html', {'compras': compras})
 
+
 @require_POST
 def eliminar_compra(request, compra_id):
     compra = get_object_or_404(Compra, id_orden_compra=compra_id)
