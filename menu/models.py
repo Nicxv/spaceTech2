@@ -171,3 +171,17 @@ class DetalleCompra(models.Model):
     def __str__(self):
         return f'Detalle {self.correlativo} de {self.orden_compra}'
     
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    added_at = models.DateTimeField(default=timezone.now)

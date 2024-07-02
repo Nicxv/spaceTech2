@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from spacetech import settings
 from . import views
 from django.urls import path
-from .views import CustomPasswordResetConfirmView, aceptar_compra, crear_producto, crear_proveedor, descargar_pdf2, editar_proveedor, eliminar_proveedor,  enviar_publicidad, inventario,  ver_productos_proveedor
+from .views import CustomPasswordResetConfirmView, aceptar_compra, add_to_cart, checkout, crear_producto, crear_proveedor, decrement_quantity, descargar_pdf2, editar_proveedor, eliminar_proveedor,  enviar_publicidad, increment_quantity, inventario, remove_from_cart,  ver_productos_proveedor, view_cart
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
@@ -99,6 +99,16 @@ urlpatterns = [
     path('inventario/', views.inventario, name='inventario'),
     path('subir_a_home/<int:producto_id>/', views.subir_a_home, name='subir_a_home'),
     path('producto/<int:id_producto>/', views.detalle_producto_view, name='detalle_producto'),
+
+
+
+
+    path('add_to_cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
+    path('remove_from_cart/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
+    path('increment_quantity/<int:item_id>/', increment_quantity, name='increment_quantity'),
+    path('decrement_quantity/<int:item_id>/', decrement_quantity, name='decrement_quantity'),
+    path('cart/', view_cart, name='view_cart'),
+     path('checkout/', checkout, name='checkout'),
 
 ]
 

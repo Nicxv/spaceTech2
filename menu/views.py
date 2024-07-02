@@ -1268,3 +1268,89 @@ def subir_a_home(request, producto_id):
 def detalle_producto_view(request, id_producto):
     producto = get_object_or_404(Producto, id_producto=id_producto)
     return render(request, 'detalle_producto.html', {'producto': producto})
+
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Producto, Cart, CartItem
+
+@login_required
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Producto, pk=product_id)
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
+    if not created:
+        cart_item.quantity += 1
+    cart_item.save()
+
+    return redirect('view_cart')
+
+@login_required
+def remove_from_cart(request, item_id):
+    item = get_object_or_404(CartItem, pk=item_id)
+    item.delete()
+    return redirect('view_cart')
+
+@login_required
+def increment_quantity(request, item_id):
+    item = get_object_or_404(CartItem, pk=item_id)
+    item.quantity += 1
+    item.save()
+    return redirect('view_cart')
+
+@login_required
+def decrement_quantity(request, item_id):
+    item = get_object_or_404(CartItem, pk=item_id)
+    if item.quantity > 1:
+        item.quantity -= 1
+        item.save()
+    else:
+        item.delete()
+    return redirect('view_cart')
+
+@login_required
+def view_cart(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    items = CartItem.objects.filter(cart=cart)
+    
+    cart_items = []
+    total = 0
+    
+    for item in items:
+        subtotal = item.product.precio_venta * item.quantity
+        total += subtotal
+        cart_items.append({
+            'product': item.product,
+            'quantity': item.quantity,
+            'subtotal': subtotal,
+            'id': item.id
+        })
+    
+    return render(request, 'cart.html', {'items': cart_items, 'total': total})
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def checkout(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    items = CartItem.objects.filter(cart=cart)
+    
+    # Aquí puedes agregar lógica para procesar la compra,
+    # como calcular el total, aplicar descuentos, etc.
+    
+    total = sum(item.product.precio_venta * item.quantity for item in items)
+    
+    if request.method == 'POST':
+        # Procesar el pago y completar la compra
+        # Lógica para procesar el pago
+        # ...
+        
+        # Redirigir a una página de éxito de compra
+        return redirect('purchase_success')
+    
+    return render(request, 'checkout.html', {'items': items, 'total': total})
