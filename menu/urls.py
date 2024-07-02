@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from spacetech import settings
 from . import views
 from django.urls import path
-from .views import CustomPasswordResetConfirmView, crear_producto, crear_proveedor, editar_proveedor, eliminar_proveedor, enviar_publicidad,  ver_productos_proveedor
+from .views import CustomPasswordResetConfirmView, aceptar_compra, crear_producto, crear_proveedor, descargar_pdf2, editar_proveedor, eliminar_proveedor,  enviar_publicidad,  ver_productos_proveedor
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
@@ -95,7 +95,9 @@ urlpatterns = [
     path('compra/recepcion/', views.recepcion_compra, name='recepcion_compra'),
     path('compra/eliminar/<uuid:compra_id>/', views.eliminar_compra, name='eliminar_compra'),
 
-    
+      path('compra/<uuid:compra_id>/descargar_pdf2/', descargar_pdf2, name='descargar_pdf2'),
+
+      path('compra/<uuid:compra_id>/aceptar/', aceptar_compra, name='aceptar_compra'),
 ]
 
 # Clave de google maps api

@@ -23,8 +23,6 @@
                 </h2>
                 <div id="collapse{{ compra.id_orden_compra }}" class="accordion-collapse collapse" aria-labelledby="heading{{ compra.id_orden_compra }}" data-bs-parent="#accordionCompra">
                     <div class="accordion-body">
-                        <p><strong>Proveedor:</strong> {{ compra.proveedor.nombre_empresa }}</p>
-                        <p><strong>Email del Proveedor:</strong> {{ compra.proveedor.email_proveedor }}</p>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -53,15 +51,21 @@
                                 {% endfor %}
                             </tbody>
                         </table>
-                        <p><strong>Subtotal:</strong> ${{ compra.sub_total }}</p>
-                        <p><strong>IVA:</strong> ${{ compra.iva }}</p>
-                        <p><strong>Total:</strong> ${{ compra.total }}</p>
+                        <p>Subtotal: ${{ compra.sub_total }}</p>
+                        <p>IVA: ${{ compra.iva }}</p>
+                        <p>Total: ${{ compra.total }}</p>
+                        <p>Proveedor: {{ compra.proveedor.nombre_empresa }}</p>
+                        <p>Email Proveedor: {{ compra.proveedor.email_proveedor }}</p>
                         <!-- Botones de Acción -->
-                        <button class="btn btn-success" onclick="aceptarCompra('{{ compra.id_orden_compra }}')">Aceptar</button>
+                        <form action="{% url 'aceptar_compra' compra.id_orden_compra %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Aceptar</button>
+                        </form>
                         <form action="{% url 'eliminar_compra' compra.id_orden_compra %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger">Eliminar</button>
                         </form>
+                        <a href="{% url 'descargar_pdf2' compra.id_orden_compra %}" class="btn btn-info">Descargar PDF</a>
                     </div>
                 </div>
             </div>
@@ -71,12 +75,5 @@
     </div>
     <!-- Scripts para Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function aceptarCompra(compraId) {
-            // Lógica para aceptar compra (Implementar según necesidad)
-            console.log("Aceptar compra: " + compraId);
-            // Aquí podría ir una llamada AJAX para actualizar el estado de la compra
-        }
-    </script>
 </body>
 </html>

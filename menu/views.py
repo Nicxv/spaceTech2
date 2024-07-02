@@ -1071,3 +1071,172 @@ def eliminar_producto(request, producto_id):
     proveedor_id = producto.proveedor.id_proveedor
     producto.delete()
     return redirect('ver_productos_proveedor', proveedor_id=proveedor_id)
+
+
+from fpdf import FPDF
+from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Compra
+from io import BytesIO
+
+class PDFFF(FPDF):
+    def header(self):
+        self.set_font('Arial', 'B', 12)
+        self.cell(0, 10, 'Boleta de Compra', 0, 1, 'C')
+        self.ln(10)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, f'Página {self.page_no()}', 0, 0, 'C')
+
+    def chapter_title(self, title):
+        self.set_font('Arial', 'B', 12)
+        self.cell(0, 10, title, 0, 1, 'L')
+        self.ln(4)
+
+    def chapter_body(self, body):
+        self.set_font('Arial', '', 12)
+        self.multi_cell(0, 10, body)
+        self.ln()
+
+    def add_detail(self, label, value):
+        self.set_font('Arial', '', 12)
+        self.cell(0, 10, f'{label}: {value}', 0, 1, 'L')
+
+def format_price(price):
+    return f"${price:,.0f}".replace(",", ".")
+
+def descargar_pdf2(request, compra_id):
+    compra = get_object_or_404(Compra, id_orden_compra=compra_id)
+
+    pdf = PDFFF()
+    pdf.add_page()
+
+    # Detalles de la transacción
+    pdf.chapter_title("Detalles de la Transacción")
+    pdf.add_detail("Orden de Compra", str(compra.id_orden_compra))
+    pdf.add_detail("Fecha de Transacción", compra.fecha.strftime("%d/%m/%Y"))
+    pdf.add_detail("Monto Total", format_price(compra.total))
+
+    # Detalles de la compra
+    pdf.chapter_title("Detalles de la Compra")
+    pdf.add_detail("ID Orden de Compra", str(compra.id_orden_compra))
+    pdf.add_detail("Nombre del Proveedor", compra.proveedor.nombre_empresa)
+    pdf.add_detail("Email del Proveedor", compra.proveedor.email_proveedor)
+
+    # Totales
+    pdf.chapter_title("Totales")
+    pdf.add_detail("Subtotal", format_price(compra.sub_total))
+    pdf.add_detail("IVA", format_price(compra.iva))
+    pdf.add_detail("Total", format_price(compra.total))
+
+    # Productos comprados
+    pdf.chapter_title("Productos Comprados")
+    for detalle in compra.detalles.all():
+        pdf.multi_cell(0, 10, f"{detalle.producto.nombre_producto} - {detalle.cantidad} x {format_price(detalle.precio_costo)}")
+
+    # Guardar el PDF en un BytesIO buffer
+    pdf_buffer = BytesIO()
+    pdf_output = pdf.output(dest='S').encode('latin1')
+    pdf_buffer.write(pdf_output)
+    pdf_buffer.seek(0)
+
+    # Crear la respuesta HTTP con el PDF
+    response = HttpResponse(pdf_buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Compra_{compra.id_orden_compra}.pdf"'
+    
+    return response
+
+from fpdf import FPDF
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from .models import Compra
+from io import BytesIO
+from django.contrib import messages
+from django.views.decorators.http import require_POST
+
+class PDFFF(FPDF):
+    def header(self):
+        self.set_font('Arial', 'B', 12)
+        self.cell(0, 10, 'Boleta de Compra', 0, 1, 'C')
+        self.ln(10)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, f'Página {self.page_no()}', 0, 0, 'C')
+
+    def chapter_title(self, title):
+        self.set_font('Arial', 'B', 12)
+        self.cell(0, 10, title, 0, 1, 'L')
+        self.ln(4)
+
+    def chapter_body(self, body):
+        self.set_font('Arial', '', 12)
+        self.multi_cell(0, 10, body)
+        self.ln()
+
+    def add_detail(self, label, value):
+        self.set_font('Arial', '', 12)
+        self.cell(0, 10, f'{label}: {value}', 0, 1, 'L')
+
+def format_price(price):
+    return f"${price:,.0f}".replace(",", ".")
+
+@require_POST
+def aceptar_compra(request, compra_id):
+    compra = get_object_or_404(Compra, id_orden_compra=compra_id)
+    proveedor_email = compra.proveedor.email_proveedor
+
+    pdf = PDFFF()
+    pdf.add_page()
+
+    # Detalles de la transacción
+    pdf.chapter_title("Detalles de la Transacción")
+    pdf.add_detail("Orden de Compra", str(compra.id_orden_compra))
+    pdf.add_detail("Fecha de Transacción", compra.fecha.strftime("%d/%m/%Y"))
+    pdf.add_detail("Monto Total", format_price(compra.total))
+
+    # Detalles de la compra
+    pdf.chapter_title("Detalles de la Compra")
+    pdf.add_detail("ID Orden de Compra", str(compra.id_orden_compra))
+    pdf.add_detail("Nombre del Proveedor", compra.proveedor.nombre_empresa)
+    pdf.add_detail("Email del Proveedor", proveedor_email)
+
+    # Totales
+    pdf.chapter_title("Totales")
+    pdf.add_detail("Subtotal", format_price(compra.sub_total))
+    pdf.add_detail("IVA", format_price(compra.iva))
+    pdf.add_detail("Total", format_price(compra.total))
+
+    # Productos comprados
+    pdf.chapter_title("Productos Comprados")
+    for detalle in compra.detalles.all():
+        pdf.multi_cell(0, 10, f"{detalle.producto.nombre_producto} - {detalle.cantidad} x {format_price(detalle.precio_costo)}")
+
+    # Guardar el PDF en un BytesIO buffer
+    pdf_buffer = BytesIO()
+    pdf_output = pdf.output(dest='S').encode('latin1')
+    pdf_buffer.write(pdf_output)
+    pdf_buffer.seek(0)
+    
+    # Crear el correo electrónico
+    email = EmailMessage(
+        'Boleta de Compra',
+        'Estimado/a proveedor,\n\nAdjuntamos a este correo la boleta de la compra realizada.\n\nSaludos cordiales,\n\nEl equipo de SpaceTech',
+        settings.DEFAULT_FROM_EMAIL,
+        [proveedor_email],  # Enviar al email del proveedor
+    )
+    email.attach(f'Compra_{compra.id_orden_compra}.pdf', pdf_buffer.getvalue(), 'application/pdf')
+    
+    try:
+        # Enviar el correo
+        email.send()
+        messages.success(request, 'Boleta enviada por email exitosamente al proveedor.')
+    except Exception as e:
+        messages.error(request, f'Error al enviar el email: {e}')
+    
+    return redirect('recepcion_compra')
