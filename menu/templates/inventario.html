@@ -33,8 +33,9 @@
                 <tbody>
                     {% for producto in productos %}
                     <tr>
-                        <form method="post">
+                        <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
+                            <input type="hidden" name="producto_id" value="{{ producto.id_producto }}">
                             <td>{{ producto.id_producto }}</td>
                             <td>{{ producto.nombre_producto }}</td>
                             <td>{{ cantidades_esperadas|get_value_from_dict:producto.pk }}</td>
