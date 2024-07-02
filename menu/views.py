@@ -1010,6 +1010,7 @@ from .models import Producto, Proveedor, Compra, DetalleCompra
 from datetime import datetime
 import uuid
 
+
 @require_POST
 def crear_compra(request, proveedor_id):
     proveedor = get_object_or_404(Proveedor, pk=proveedor_id)
@@ -1017,6 +1018,11 @@ def crear_compra(request, proveedor_id):
     total_subtotal = float(request.POST.get('total_subtotal', 0))
     total_iva = float(request.POST.get('total_iva', 0))
     grand_total = float(request.POST.get('grand_total', 0))
+
+    # Verifica si no hay productos seleccionados
+    if total_subtotal == 0 or total_iva == 0 or grand_total == 0:
+        messages.error(request, 'No se puede realizar la compra sin productos seleccionados.')
+        return redirect('ver_productos_proveedor', proveedor_id=proveedor_id)
     
     compra = Compra.objects.create(
         id_orden_compra=uuid.uuid4(),
