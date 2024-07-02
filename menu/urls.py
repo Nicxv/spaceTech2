@@ -98,7 +98,7 @@ urlpatterns = [
     path('compra/<uuid:compra_id>/aceptar/', aceptar_compra, name='aceptar_compra'),
     path('inventario/', views.inventario, name='inventario'),
     path('subir_a_home/<int:producto_id>/', views.subir_a_home, name='subir_a_home'),
-    path('detalle_producto/<int:producto_id>/', views.detalle_producto, name='detalle_producto'),
+    path('producto/<int:id_producto>/', views.detalle_producto_view, name='detalle_producto'),
 
 ]
 

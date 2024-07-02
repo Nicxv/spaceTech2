@@ -1265,6 +1265,6 @@ def subir_a_home(request, producto_id):
         messages.success(request, 'Producto subido a Home.')
     return redirect('inventario')
 
-def detalle_producto(request, producto_id):
-    producto = get_object_or_404(Producto, pk=producto_id)
+def detalle_producto_view(request, id_producto):
+    producto = get_object_or_404(Producto, id_producto=id_producto)
     return render(request, 'detalle_producto.html', {'producto': producto})
