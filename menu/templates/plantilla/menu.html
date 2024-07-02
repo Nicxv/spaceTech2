@@ -54,7 +54,8 @@
                                 <li><a class="dropdown-item" href="{% url 'listaU' %}">Usuarios</a></li>
                                 <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}">Registro de ventas</a></li>
                                 <li><a class="dropdown-item" href="">Reportes</a></li>
-                                <li><a class="dropdown-item" href="listar_proveedores/">Proveedor</a></li> 
+                                <li><a class="dropdown-item" href="{% url 'listar_proveedores' %}">Proveedor</a></li>
+
                             </ul>
                         </li>
                     {% elif request.session.role == 'BODEGA' %}
