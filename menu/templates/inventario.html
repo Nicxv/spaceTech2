@@ -19,6 +19,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>ID Producto</th>
                         <th>Nombre del Producto</th>
                         <th>Cantidad Esperada</th>
                         <th>Stock Actual</th>
@@ -32,8 +33,9 @@
                 <tbody>
                     {% for producto in productos %}
                     <tr>
-                        <form method="post" enctype="multipart/form-data">
+                        <form method="post">
                             {% csrf_token %}
+                            <td>{{ producto.id_producto }}</td>
                             <td>{{ producto.nombre_producto }}</td>
                             <td>{{ cantidades_esperadas|get_value_from_dict:producto.pk }}</td>
                             <td><input type="number" name="stock_actual" value="{{ producto.stock_actual }}" class="form-control"></td>
@@ -46,7 +48,6 @@
                                 {% else %}
                                     No Image<br>
                                 {% endif %}
-                                <input type="file" name="foto_producto" class="form-control">
                             </td>
                             <td><button type="submit" class="btn btn-primary">Guardar</button></td>
                         </form>

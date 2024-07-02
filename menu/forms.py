@@ -111,7 +111,4 @@ from .models import Producto
 class ProductoInventarioForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ['stock_actual', 'stock_minimo', 'precio_venta', 'foto_producto']
-        widgets = {
-            'foto_producto': forms.FileInput(),
-        }
+        fields = ['stock_actual', 'stock_minimo', 'precio_venta']

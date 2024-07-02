@@ -1225,11 +1225,13 @@ from .forms import ProductoInventarioForm
 from django.contrib import messages
 
 
+
 def inventario(request):
     if request.method == 'POST':
-        form = ProductoInventarioForm(request.POST, request.FILES)
+        form = ProductoInventarioForm(request.POST)
         if form.is_valid():
-            form.save()
+            producto = form.save(commit=False)
+            producto.save(update_fields=['stock_actual', 'stock_minimo', 'precio_venta'])
             messages.success(request, 'Producto guardado.')
             return redirect('inventario')
         else:
@@ -1253,7 +1255,6 @@ def inventario(request):
         'form': form,
         'cantidades_esperadas': cantidades_esperadas
     })
-
 def subir_a_home(request, producto_id):
     if request.method == 'POST':
         producto = get_object_or_404(Producto, pk=producto_id)
