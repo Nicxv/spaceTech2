@@ -1004,22 +1004,11 @@ def actualizar_carrito(request, proveedor_id):
 
 
 # views.py
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-from .models import Proveedor, Producto, Compra, DetalleCompra
-import uuid
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-from .models import Proveedor, Producto, Compra, DetalleCompra
 from django.views.decorators.http import require_POST
-import uuid
-
-
-from django.shortcuts import redirect, get_object_or_404
-from django.views.decorators.http import require_POST
-from .models import Compra, Producto, DetalleCompra, Proveedor
-import uuid
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Producto, Proveedor, Compra, DetalleCompra
 from datetime import datetime
+import uuid
 
 @require_POST
 def crear_compra(request, proveedor_id):
@@ -1057,14 +1046,11 @@ def crear_compra(request, proveedor_id):
                 correlativo=DetalleCompra.objects.filter(orden_compra=compra).count() + 1
             )
 
-    # Actualiza el redireccionamiento para no incluir compra_id
-    return redirect('recepcion_compra')  # Sin pasar compra_id
+    return redirect('recepcion_compra')
 
 def recepcion_compra(request):
-    # Aquí podrías agregar filtros por fecha, por ejemplo, para obtener compras de los últimos 7 días
-    compras = Compra.objects.all().order_by('-fecha')  # Ordenar por fecha de forma descendente para las compras más recientes
+    compras = Compra.objects.all().order_by('-fecha')
     return render(request, 'recepcion_compra.html', {'compras': compras})
-
 
 @require_POST
 def eliminar_compra(request, compra_id):
@@ -1072,14 +1058,9 @@ def eliminar_compra(request, compra_id):
     compra.delete()
     return redirect('recepcion_compra')
 
-# views.py
-
-from django.views.decorators.http import require_POST
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Producto
 @require_POST
 def eliminar_producto(request, producto_id):
     producto = get_object_or_404(Producto, pk=producto_id)
-    proveedor_id = producto.proveedor.id_proveedor  # Obtén el id del proveedor antes de eliminar el producto
+    proveedor_id = producto.proveedor.id_proveedor
     producto.delete()
     return redirect('ver_productos_proveedor', proveedor_id=proveedor_id)

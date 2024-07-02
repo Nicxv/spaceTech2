@@ -39,10 +39,14 @@
                                     <input type="hidden" name="precio_{{ producto.id_producto }}" value="{{ producto.precio_costo }}">
                                 </td>
                                 <td>
-                                    <input type="number" name="cantidad_{{ producto.id_producto }}" class="form-control cantidad" data-precio="{{ producto.precio_costo }}" value="1" min="1">
+                                    <div class="input-group">
+                                        <button type="button" class="btn btn-outline-secondary decrement">-</button>
+                                        <input type="number" name="cantidad_{{ producto.id_producto }}" class="form-control cantidad" data-precio="{{ producto.precio_costo }}" value="0" min="0">
+                                        <button type="button" class="btn btn-outline-secondary increment">+</button>
+                                    </div>
                                 </td>
                                 <td>
-                                    $<span class="subtotal">{{ producto.precio_costo }}</span>
+                                    $<span class="subtotal">0</span>
                                     <input type="hidden" name="subtotal_{{ producto.id_producto }}" class="input-subtotal">
                                 </td>
                             </tr>
@@ -76,8 +80,8 @@
                 const precio = parseFloat(input.dataset.precio);
                 const cantidad = parseInt(input.value);
                 const subtotal = precio * cantidad;
-                input.closest('tr').querySelector('.subtotal').textContent = subtotal;
-                input.closest('tr').querySelector('.input-subtotal').value = subtotal;
+                input.closest('tr').querySelector('.subtotal').textContent = subtotal.toFixed(0);
+                input.closest('tr').querySelector('.input-subtotal').value = subtotal.toFixed(0);
                 total += subtotal;
             });
             const totalIVA = total * 0.19;
@@ -89,6 +93,24 @@
             document.getElementById('grandTotal').textContent = grandTotal.toFixed(0);
             document.getElementById('inputGrandTotal').value = grandTotal.toFixed(0);
         };
+
+        document.querySelectorAll('.increment').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = button.closest('.input-group').querySelector('.cantidad');
+                input.value = parseInt(input.value) + 1;
+                updateSubtotals();
+            });
+        });
+
+        document.querySelectorAll('.decrement').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = button.closest('.input-group').querySelector('.cantidad');
+                if (parseInt(input.value) > 0) {
+                    input.value = parseInt(input.value) - 1;
+                    updateSubtotals();
+                }
+            });
+        });
 
         document.querySelectorAll('.cantidad').forEach(input => {
             input.addEventListener('change', updateSubtotals);
