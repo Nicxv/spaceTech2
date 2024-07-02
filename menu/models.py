@@ -170,3 +170,4 @@ class DetalleCompra(models.Model):
 
     def __str__(self):
         return f'Detalle {self.correlativo} de {self.orden_compra}'
+    

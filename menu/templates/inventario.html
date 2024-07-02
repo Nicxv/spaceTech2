@@ -1,0 +1,86 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding-top: 20px; }
+        .container { padding-bottom: 20px; }
+        .table img { width: 100px; height: auto; }
+        form { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Inventario</h1>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nombre del Producto</th>
+                        <th>Cantidad Esperada</th>
+                        <th>Stock Actual</th>
+                        <th>Stock Mínimo</th>
+                        <th>Precio de Costo</th>
+                        <th>Precio de Venta</th>
+                        <th>Foto del Producto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <td>{{ producto.nombre_producto }}</td>
+                            <td>{{ cantidades_esperadas|get_value_from_dict:producto.pk }}</td>
+                            <td><input type="number" name="stock_actual" value="{{ producto.stock_actual }}" class="form-control"></td>
+                            <td><input type="number" name="stock_minimo" value="{{ producto.stock_minimo }}" class="form-control"></td>
+                            <td>{{ producto.precio_costo }}</td>
+                            <td><input type="number" name="precio_venta" value="{{ producto.precio_venta }}" class="form-control"></td>
+                            <td>
+                                {% if producto.foto_producto %}
+                                    <img src="{{ producto.foto_producto.url }}" alt="{{ producto.nombre_producto }}" class="img-thumbnail"><br>
+                                {% else %}
+                                    No Image<br>
+                                {% endif %}
+                                <input type="file" name="foto_producto" class="form-control">
+                            </td>
+                            <td><button type="submit" class="btn btn-primary">Guardar</button></td>
+                        </form>
+                        <td>
+                            <button type="button" class="btn btn-success subir-a-home-btn" data-id="{{ producto.id_producto }}">Subir a Home</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.subir-a-home-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const productoId = this.getAttribute('data-id');
+                if (confirm('¿Estás seguro de que deseas subir este producto al home?')) {
+                    fetch(`/subir_a_home/${productoId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            alert('Producto subido a Home.');
+                            window.location.reload();
+                        } else {
+                            alert('Error al subir el producto.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

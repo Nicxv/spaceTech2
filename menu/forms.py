@@ -87,7 +87,6 @@ class ProveedorForm(forms.ModelForm):
 from .models import Producto
 from django import forms
 from .models import Producto
-
 from django import forms
 from .models import Producto
 
@@ -97,4 +96,22 @@ class ProductoForm(forms.ModelForm):
         fields = ['nombre_producto', 'foto_producto', 'precio_costo']
         widgets = {
             'foto_producto': forms.FileInput(),  # Asegura que se use el widget correcto para la carga de archivos
+        }
+
+
+
+
+from django import forms
+from .models import Producto
+from django import forms
+from .models import Producto
+from django import forms
+from .models import Producto
+
+class ProductoInventarioForm(forms.ModelForm):
+    class Meta:
+        model = Producto
+        fields = ['stock_actual', 'stock_minimo', 'precio_venta', 'foto_producto']
+        widgets = {
+            'foto_producto': forms.FileInput(),
         }

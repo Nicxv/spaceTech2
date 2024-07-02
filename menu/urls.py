@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from spacetech import settings
 from . import views
 from django.urls import path
-from .views import CustomPasswordResetConfirmView, aceptar_compra, crear_producto, crear_proveedor, descargar_pdf2, editar_proveedor, eliminar_proveedor,  enviar_publicidad,  ver_productos_proveedor
+from .views import CustomPasswordResetConfirmView, aceptar_compra, crear_producto, crear_proveedor, descargar_pdf2, editar_proveedor, eliminar_proveedor,  enviar_publicidad, inventario,  ver_productos_proveedor
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
@@ -89,15 +89,17 @@ urlpatterns = [
     path('producto/<int:producto_id>/añadir-al-carrito/', views.añadir_al_carrito, name='añadir_al_carrito'),   
     path('proveedor/<int:proveedor_id>/actualizar_carrito/', views.actualizar_carrito, name='actualizar_carrito'),
 
-
-   
-     path('proveedor/<int:proveedor_id>/crear_compra/', views.crear_compra, name='crear_compra'),
+    path('proveedor/<int:proveedor_id>/crear_compra/', views.crear_compra, name='crear_compra'),
     path('compra/recepcion/', views.recepcion_compra, name='recepcion_compra'),
     path('compra/eliminar/<uuid:compra_id>/', views.eliminar_compra, name='eliminar_compra'),
 
-      path('compra/<uuid:compra_id>/descargar_pdf2/', descargar_pdf2, name='descargar_pdf2'),
+    path('compra/<uuid:compra_id>/descargar_pdf2/', descargar_pdf2, name='descargar_pdf2'),
 
-      path('compra/<uuid:compra_id>/aceptar/', aceptar_compra, name='aceptar_compra'),
+    path('compra/<uuid:compra_id>/aceptar/', aceptar_compra, name='aceptar_compra'),
+    path('inventario/', views.inventario, name='inventario'),
+    path('subir_a_home/<int:producto_id>/', views.subir_a_home, name='subir_a_home'),
+    path('detalle_producto/<int:producto_id>/', views.detalle_producto, name='detalle_producto'),
+
 ]
 
 # Clave de google maps api
