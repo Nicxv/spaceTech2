@@ -204,7 +204,7 @@ def formulario(request):
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import Articulos, Comuna
+from .models import Articulos, Compra, Comuna, DetalleCompra
 from .forms import ArticulosForm, UpdateProfileForm
 
 def agregar_producto(request):
@@ -890,23 +890,184 @@ from django.shortcuts import render
 
 from .forms import ProveedorForm
 
+from django.shortcuts import render, redirect
+from .forms import ProveedorForm
+
 def crear_proveedor(request):
     if request.method == 'POST':
         form = ProveedorForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('crear_proveedor')  # Redirige a la misma página para crear otro proveedor
+            return redirect('listar_proveedores')  # Redirige a la lista de proveedores tras guardar
     else:
         form = ProveedorForm()
-    return render(request, 'crear_proveedor.html', {'form': form})
+    return render(request, 'crear_proveedor.html', {'form': form})  # Asegúrate de usar una plantilla separada
+
+
+
+
+from .models import Proveedor
+def listar_proveedores(request):
+    proveedores = Proveedor.objects.all().order_by('nombre_empresa')
+    return render(request, 'listar_proveedores.html', {'proveedores': proveedores})
 
 
 
 
 
+from django.shortcuts import redirect, get_object_or_404
+from .models import Proveedor
+
+def eliminar_proveedor(request, id):
+    proveedor = get_object_or_404(Proveedor, pk=id)
+    proveedor.delete()
+    return redirect('listar_proveedores')
 
 
+def editar_proveedor(request, id):
+    proveedor = get_object_or_404(Proveedor, pk=id)
+    if request.method == 'POST':
+        form = ProveedorForm(request.POST, instance=proveedor)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_proveedores')
+    else:
+        form = ProveedorForm(instance=proveedor)
+    return render(request, 'editar_proveedor.html', {'form': form})
 
 
+from .forms import ProductoForm
+
+def crear_producto(request, proveedor_id):
+    # Primero obtenemos el proveedor usando get_object_or_404 para asegurarnos de que exista.
+    proveedor = get_object_or_404(Proveedor, pk=proveedor_id)
+    
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES)
+        if form.is_valid():
+            producto = form.save(commit=False)
+            # Asignamos el proveedor recuperado al producto.
+            producto.proveedor = proveedor
+            producto.save()
+            # Usamos el ID del proveedor para redirigir correctamente.
+            return redirect('ver_productos_proveedor', proveedor_id=proveedor_id)
+    else:
+        form = ProductoForm()
+
+    return render(request, 'crear_producto.html', {'form': form})
+from .models import Producto, Proveedor
+
+def ver_productos_proveedor(request, proveedor_id):
+    proveedor = get_object_or_404(Proveedor, pk=proveedor_id)
+    productos = Producto.objects.filter(proveedor=proveedor)
+    return render(request, 'productos_proveedor.html', {'productos': productos, 'proveedor': proveedor})
 
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+import json
+from .models import Producto, Proveedor, Compra, DetalleCompra
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Producto, Proveedor, Compra, DetalleCompra
+
+def añadir_al_carrito(request, producto_id):
+    if request.method == 'POST':
+        producto = get_object_or_404(Producto, pk=producto_id)
+        cantidad = int(request.POST.get('cantidad', 1))
+
+        # Aquí manejarías la lógica para añadir al "carrito",
+        # Por ahora, simplemente redirige de nuevo a la lista de productos
+
+        return redirect('productos_proveedor', proveedor_id=producto.proveedor.id_proveedor)
+
+# En tus urls.py
+
+from django.shortcuts import redirect
+from .models import Producto, DetalleCompra, Compra
+
+def actualizar_carrito(request, proveedor_id):
+    if request.method == 'POST':
+        for key, value in request.POST.items():
+            if key.startswith('cantidad_'):
+                producto_id = key.split('_')[1]
+                cantidad = int(value)
+                producto = Producto.objects.get(id_producto=producto_id)
+                # Asumiendo que ya existe una compra, actualizamos o creamos DetalleCompra
+                detalle, created = DetalleCompra.objects.update_or_create(
+                    producto=producto,
+                    defaults={'cantidad': cantidad, 'precio_costo': producto.precio_costo, 'sub_total': producto.precio_costo * cantidad}
+                )
+        # Redirige a la vista de carrito o resumen de compra
+        return redirect('ver_resumen_compra', proveedor_id=proveedor_id)
+
+
+# views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from .models import Proveedor, Producto, Compra, DetalleCompra
+import uuid
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from .models import Proveedor, Producto, Compra, DetalleCompra
+from django.views.decorators.http import require_POST
+import uuid
+
+
+from django.shortcuts import redirect, get_object_or_404
+from django.views.decorators.http import require_POST
+from .models import Compra, Producto, DetalleCompra, Proveedor
+import uuid
+from datetime import datetime
+
+@require_POST
+def crear_compra(request, proveedor_id):
+    proveedor = get_object_or_404(Proveedor, pk=proveedor_id)
+    
+    total_subtotal = float(request.POST.get('total_subtotal', 0))
+    total_iva = float(request.POST.get('total_iva', 0))
+    grand_total = float(request.POST.get('grand_total', 0))
+    
+    compra = Compra.objects.create(
+        id_orden_compra=uuid.uuid4(),
+        proveedor=proveedor,
+        sub_total=total_subtotal,
+        iva=total_iva,
+        total=grand_total,
+        fecha=datetime.now()
+    )
+
+    productos = Producto.objects.filter(proveedor=proveedor)
+    for producto in productos:
+        cantidad_key = f'cantidad_{producto.id_producto}'
+        precio_key = f'precio_{producto.id_producto}'
+        subtotal_key = f'subtotal_{producto.id_producto}'
+
+        cantidad = int(request.POST.get(cantidad_key, 0))
+        if cantidad > 0:  # Solo crea detalles si hay cantidad
+            precio_costo = float(request.POST.get(precio_key, 0))
+            sub_total = float(request.POST.get(subtotal_key, 0))
+            DetalleCompra.objects.create(
+                orden_compra=compra,
+                producto=producto,
+                cantidad=cantidad,
+                precio_costo=precio_costo,
+                sub_total=sub_total,
+                correlativo=DetalleCompra.objects.filter(orden_compra=compra).count() + 1
+            )
+
+    # Actualiza el redireccionamiento para no incluir compra_id
+    return redirect('recepcion_compra')  # Sin pasar compra_id
+
+def recepcion_compra(request):
+    # Aquí podrías agregar filtros por fecha, por ejemplo, para obtener compras de los últimos 7 días
+    compras = Compra.objects.all().order_by('-fecha')  # Ordenar por fecha de forma descendente para las compras más recientes
+    return render(request, 'recepcion_compra.html', {'compras': compras})
+
+
+@require_POST
+def eliminar_compra(request, compra_id):
+    compra = get_object_or_404(Compra, id_orden_compra=compra_id)
+    compra.delete()
+    return redirect('recepcion_compra')

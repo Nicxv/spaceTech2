@@ -141,7 +141,7 @@ class Producto(models.Model):
     precio_venta = models.IntegerField(verbose_name='Precio de Venta', default=0)
     foto_producto = models.ImageField(upload_to='static/img/', verbose_name='Foto del Producto', null=True, blank=True)
 
-
+    
     def __str__(self):
         return self.nombre_producto
 
@@ -159,7 +159,8 @@ class Compra(models.Model):
 
 
 class DetalleCompra(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     orden_compra = models.ForeignKey(Compra, on_delete=models.CASCADE, verbose_name='Orden de Compra', related_name='detalles')
     correlativo = models.IntegerField(verbose_name='Número Correlativo')
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, verbose_name='Producto')

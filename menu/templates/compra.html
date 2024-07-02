@@ -1,0 +1,20 @@
+<!-- recepcion_compra.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Recepción de Compra</title>
+</head>
+<body>
+    <h1>Compra Realizada con Éxito</h1>
+    <p>Proveedor: {{ compra.proveedor.nombre_empresa }}</p>
+    <p>Subtotal: ${{ compra.sub_total }}</p>
+    <p>IVA: ${{ compra.iva }}</p>
+    <p>Total: ${{ compra.total }}</p>
+    {% for detalle in detalles %}
+        <p>Producto: {{ detalle.producto.nombre_producto }}, Cantidad: {{ detalle.cantidad }}, Subtotal: ${{ detalle.sub_total }}</p>
+    {% endfor %}
+    <a href="{% url 'productos_proveedor' compra.proveedor.id_proveedor %}">Volver a Productos</a>
+</body>
+</html>

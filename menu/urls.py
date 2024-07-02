@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from spacetech import settings
 from . import views
 from django.urls import path
-from .views import CustomPasswordResetConfirmView, crear_proveedor,  enviar_publicidad
+from .views import CustomPasswordResetConfirmView, crear_producto, crear_proveedor, editar_proveedor, eliminar_proveedor, enviar_publicidad,  ver_productos_proveedor
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
@@ -77,12 +77,22 @@ urlpatterns = [
 
 
    
-    path('crear_proveedor/', crear_proveedor, name='crear_proveedor'),
+    path('crear_proveedor/', views.crear_proveedor, name='crear_proveedor'),
+    path('listar_proveedores/', views.listar_proveedores, name='listar_proveedores'),
     
+   
+    path('proveedor/eliminar/<int:id>/', eliminar_proveedor, name='eliminar_proveedor'),
+    path('proveedor/editar/<int:id>/', editar_proveedor, name='editar_proveedor'),
+    path('proveedor/<int:proveedor_id>/nuevo-producto/', crear_producto, name='crear_producto'),
+    path('proveedor/<int:proveedor_id>/productos/', ver_productos_proveedor, name='ver_productos_proveedor'),
+    
+    path('producto/<int:producto_id>/añadir-al-carrito/', views.añadir_al_carrito, name='añadir_al_carrito'),   
+    path('proveedor/<int:proveedor_id>/actualizar_carrito/', views.actualizar_carrito, name='actualizar_carrito'),
 
 
-    
-    
+     path('proveedor/<int:proveedor_id>/crear_compra/', views.crear_compra, name='crear_compra'),
+    path('compra/recepcion/', views.recepcion_compra, name='recepcion_compra'),
+    path('compra/eliminar/<uuid:compra_id>/', views.eliminar_compra, name='eliminar_compra'),
 ]
 
 # Clave de google maps api
