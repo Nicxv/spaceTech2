@@ -1071,3 +1071,15 @@ def eliminar_compra(request, compra_id):
     compra = get_object_or_404(Compra, id_orden_compra=compra_id)
     compra.delete()
     return redirect('recepcion_compra')
+
+# views.py
+
+from django.views.decorators.http import require_POST
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Producto
+@require_POST
+def eliminar_producto(request, producto_id):
+    producto = get_object_or_404(Producto, pk=producto_id)
+    proveedor_id = producto.proveedor.id_proveedor  # Obtén el id del proveedor antes de eliminar el producto
+    producto.delete()
+    return redirect('ver_productos_proveedor', proveedor_id=proveedor_id)

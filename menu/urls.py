@@ -90,9 +90,12 @@ urlpatterns = [
     path('proveedor/<int:proveedor_id>/actualizar_carrito/', views.actualizar_carrito, name='actualizar_carrito'),
 
 
+   
      path('proveedor/<int:proveedor_id>/crear_compra/', views.crear_compra, name='crear_compra'),
     path('compra/recepcion/', views.recepcion_compra, name='recepcion_compra'),
     path('compra/eliminar/<uuid:compra_id>/', views.eliminar_compra, name='eliminar_compra'),
+
+    
 ]
 
 # Clave de google maps api
