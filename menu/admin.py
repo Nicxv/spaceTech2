@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 
-from .models import Usuario, Articulos, Pedidos, Carrito, CarritoItem, Comuna, Venta, DetalleVenta,Proveedor
+from .models import Usuario, Articulos, Pedidos, Carrito, CarritoItem, Comuna, Venta, DetalleVenta,Proveedor,Publicidad,SolicitudPublicidad
 # Register your models here.
 
 class UsuariosAdmin(admin.ModelAdmin):
@@ -26,3 +26,5 @@ admin.site.register(Comuna)
 admin.site.register(Venta)
 admin.site.register(DetalleVenta)
 admin.site.register(Proveedor)
+admin.site.register(Publicidad)
+admin.site.register(SolicitudPublicidad)

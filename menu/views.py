@@ -18,7 +18,9 @@ from django.shortcuts import render
 
 def home_view(request):
     productos = Producto.objects.filter(mostrar_en_home=True)
-    return render(request, 'home.html', {'productos': productos})
+    publicidades = Publicidad.objects.filter(activa=True)
+    return render(request, 'home.html', {'productos': productos, 'publicidades': publicidades})
+
 
 def busqueda_productos(request):
 
@@ -113,8 +115,7 @@ def profile_view(request):
 
 
 
-def publicidad(request):
-    return render(request, 'publicidad.html')
+
 
 
 
@@ -1468,3 +1469,70 @@ def transbank_response(request):
 @login_required
 def purchase_success(request):
     return render(request, 'purchase_success.html')
+
+
+
+
+from .forms import PublicidadForm
+from .models import Publicidad
+
+def formulario_img(request):
+    if request.method == 'POST':
+        form = PublicidadForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = PublicidadForm()
+    return render(request, 'formulario_img.html', {'form': form})
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from .models import Publicidad
+from .forms import PublicidadForm
+
+def listar_publicidades(request):
+    publicidades = Publicidad.objects.all()
+    return render(request, 'listar_publicidades.html', {'publicidades': publicidades})
+
+def editar_publicidad(request, publicidad_id):
+    publicidad = get_object_or_404(Publicidad, pk=publicidad_id)
+    if request.method == 'POST':
+        form = PublicidadForm(request.POST, request.FILES, instance=publicidad)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_publicidades')
+    else:
+        form = PublicidadForm(instance=publicidad)
+    return render(request, 'editar_publicidad.html', {'form': form, 'publicidad': publicidad})
+
+def eliminar_publicidad(request, publicidad_id):
+    publicidad = get_object_or_404(Publicidad, pk=publicidad_id)
+    if request.method == 'POST':
+        publicidad.delete()
+        return redirect('listar_publicidades')
+    return render(request, 'confirmar_eliminacion.html', {'publicidad': publicidad})
+
+
+
+
+
+from .forms import SolicitudPublicidadForm
+
+
+from django.shortcuts import render, redirect
+from .forms import SolicitudPublicidadForm
+
+def solicitud_publicidad_view(request):
+    if request.method == 'POST':
+        form = SolicitudPublicidadForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')  # Redirigir a la página de inicio después de guardar
+    else:
+        form = SolicitudPublicidadForm()
+    return render(request, 'solicitud_publicidad.html', {'form': form})
+
+from .models import SolicitudPublicidad
+def ver_solicitudes_view(request):
+    solicitudes = SolicitudPublicidad.objects.all()
+    return render(request, 'ver_solicitudes.html', {'solicitudes': solicitudes})

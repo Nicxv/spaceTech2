@@ -179,3 +179,28 @@ class DetalleVenta(models.Model):
 
     def __str__(self):
         return f'Detalle de Venta {self.venta.id} - Producto {self.producto.nombre_producto}'    
+    
+
+
+
+from django.db import models
+
+class Publicidad(models.Model):
+    imagen = models.ImageField(upload_to='publicidad/')
+    
+    activa = models.BooleanField(default=True)
+    duracion = models.IntegerField(default=5)  # Duración en segundos
+
+    def __str__(self):
+        return f'Publicidad {self.id}'
+    
+
+
+class SolicitudPublicidad(models.Model):
+    imagen = models.ImageField(upload_to='publicidades/')
+    tiempo = models.IntegerField(choices=[(1, '1 Semana'), (2, '2 Semanas'), (4, '1 Mes'), (12, '3 Meses')])
+    segundos = models.IntegerField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"Publicidad - {self.tiempo} semanas, {self.segundos} segundos"

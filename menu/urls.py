@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from spacetech import settings
 from . import views
 from django.urls import path
-from .views import CustomPasswordResetConfirmView, aceptar_compra, add_to_cart, checkout, crear_producto, crear_proveedor, decrement_quantity, descargar_pdf2, editar_proveedor, eliminar_proveedor,  enviar_publicidad, increment_quantity, inventario, remove_from_cart, remover_de_home, subir_a_home,  ver_productos_proveedor, view_cart
+from .views import CustomPasswordResetConfirmView, aceptar_compra, add_to_cart, checkout, crear_producto, crear_proveedor, decrement_quantity, descargar_pdf2, editar_proveedor, editar_publicidad, eliminar_proveedor, eliminar_publicidad,  enviar_publicidad, formulario_img, increment_quantity, inventario, listar_publicidades,  remove_from_cart, remover_de_home, solicitud_publicidad_view, subir_a_home,  ver_productos_proveedor, ver_solicitudes_view, view_cart
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
@@ -25,12 +25,15 @@ urlpatterns = [
     path('formulario', views.formulario, name='formulario'),
     path('listaU', views.listaU, name='listaU'),
     path('listaP', views.listaP, name='listaP'),
-    path('publicidad', enviar_publicidad, name='publicidad'),
+    
 
     path('listaU/eliminar/<int:usuario_id>/', views.eliminar_usuario, name='eliminar_usuario'),
     path('listaU/editar/<int:usuario_id>/', views.editar_usuario, name='editar_usuario'),
     path('listaP/eliminar/<int:producto_id>/', views.eliminar_producto, name='eliminar_producto'),
     path('listaP/modificar/<int:producto_id>/', views.modificarP, name='modificarP'),
+    path('publicidades/', listar_publicidades, name='listar_publicidades'),
+    path('publicidades/editar/<int:publicidad_id>/', editar_publicidad, name='editar_publicidad'),
+    path('publicidades/eliminar/<int:publicidad_id>/', eliminar_publicidad, name='eliminar_publicidad'),
     
   
 
@@ -114,7 +117,14 @@ urlpatterns = [
     path('transbank_response/', views.transbank_response, name='transbank_response'),
     path('purchase_success/', views.purchase_success, name='purchase_success'),
 
+    path('formulario_img/', formulario_img, name='formulario_img'),
+    
+
+     path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
+     path('ver_solicitudes/', ver_solicitudes_view, name='ver_solicitudes'),
 ]
+
+
 
 # Clave de google maps api
 # <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUjMYm_HVdhncKSb4nvc8e4Br3-pbfbfc&callback=initMap&libraries=places" async defer></script>

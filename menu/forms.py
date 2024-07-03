@@ -1,5 +1,5 @@
 from django import forms
-from . models import Articulos, Usuario
+from . models import Articulos, Publicidad, Usuario
 
 
 class UsuarioForm(forms.ModelForm):
@@ -112,3 +112,17 @@ class ProductoInventarioForm(forms.ModelForm):
     class Meta:
         model = Producto
         fields = ['stock_actual', 'stock_minimo', 'precio_venta']
+
+class PublicidadForm(forms.ModelForm):
+    class Meta:
+        model = Publicidad
+        fields = ['imagen', 'duracion']
+
+
+
+from .models import SolicitudPublicidad
+
+class SolicitudPublicidadForm(forms.ModelForm):
+    class Meta:
+        model = SolicitudPublicidad
+        fields = ['imagen', 'tiempo', 'segundos', 'precio']
