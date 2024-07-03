@@ -23,7 +23,11 @@
                 {% for solicitud in solicitudes %}
                 <tr>
                     <td>
-                        <img src="{{ solicitud.imagen.url }}" alt="Publicidad" class="img-thumbnail" style="max-width: 100px;">
+                        {% if solicitud.imagen %}
+                            <img src="{{ solicitud.imagen.url }}" alt="Publicidad" class="img-thumbnail" style="max-width: 100px;">
+                        {% else %}
+                            No Image
+                        {% endif %}
                     </td>
                     <td>{{ solicitud.get_tiempo_display }}</td>
                     <td>{{ solicitud.segundos }} segundos</td>
@@ -40,4 +44,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
-

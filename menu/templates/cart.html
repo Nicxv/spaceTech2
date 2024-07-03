@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
+
+{% load custom_filters %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,7 +85,7 @@
                         <img src="{{ item.product.foto_producto.url }}" alt="{{ item.product.nombre_producto }}" class="product-img">
                         <div class="product-details">
                             <div class="product-name">{{ item.product.nombre_producto }}</div>
-                            <div style="font-size: 20px; color: #4a4a4a;"> {{ item.product.precio_venta|floatformat:2 }}</div>
+                            <div style="font-size: 20px; color: #4a4a4a;"> {{ item.product.precio_venta|floatformat }}</div>
                             <div class="d-flex align-items-center">
                                 <a href="{% url 'decrement_quantity' item.id %}" class="btn btn-warning btn-sm">-</a>
                                 <span class="mx-2">{{ item.quantity }}</span>
@@ -91,7 +93,7 @@
                             </div>
                         </div>
                         <div class="product-actions">
-                            <div>Subtotal: ${{ item.subtotal|floatformat:2 }}</div>
+                            <div>Subtotal: ${{ item.subtotal|floatformat }}</div>
                             <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger btn-sm mt-2">Eliminar</a>
                         </div>
                     </div>
@@ -102,7 +104,7 @@
                 <div class="resume">
                     <h4>Resumen de la compra</h4>
                     <div>Productos: {{ items|length }}</div>
-                    <div class="total">Total: ${{ total|floatformat:2 }}</div>
+                    <div class="total">Total: ${{ total|floatformat }}</div>
                     <form action="{% url 'checkout' %}" method="get">
                         <button type="submit" class="btn btn-primary btn-comprar">Continuar Compra</button>
                     </form>

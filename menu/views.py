@@ -1510,20 +1510,109 @@ from .forms import SolicitudPublicidadForm
 from django.shortcuts import render, redirect
 from .forms import SolicitudPublicidadForm
 
+from django.conf import settings
+from transbank.webpay.webpay_plus.transaction import Transaction
+
+from django.utils import timezone
+@login_required
 def solicitud_publicidad_view(request):
     if request.method == 'POST':
         form = SolicitudPublicidadForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('home')  # Redirigir a la página de inicio después de guardar
+            tiempo = form.cleaned_data['tiempo']
+            segundos = form.cleaned_data['segundos']
+            precio = form.cleaned_data['precio']
+            imagen = form.cleaned_data['imagen']
+
+            # Save the uploaded image to a temporary location
+            temp_image_path = default_storage.save(f'temp_uploads/{imagen.name}', ContentFile(imagen.read()))
+
+            buy_order = str(int(timezone.now().timestamp() * 1000))
+            session_id = str(request.user.id)
+            amount = str(int(precio))
+            return_url = request.build_absolute_uri('/transbank_response_publicidad/')
+
+            commerce_code = settings.TRANSBANK_CC_COMMERCE_CODE
+            api_key = settings.TRANSBANK_CC_API_KEY
+            environment = settings.TRANSBANK_CC_ENVIRONMENT
+
+            tx = Transaction(WebpayOptions(commerce_code, api_key, environment))
+            response = tx.create(buy_order, session_id, amount, return_url)
+
+            # Store form data and temp image path in session
+            request.session['publicidad_data'] = {
+                'temp_image_path': temp_image_path,
+                'imagen': imagen.name,
+                'tiempo': tiempo,
+                'segundos': segundos,
+                'precio': str(precio)
+            }
+
+            return redirect(response['url'] + '?token_ws=' + response['token'])
+
     else:
         form = SolicitudPublicidadForm()
     return render(request, 'solicitud_publicidad.html', {'form': form})
+
+
+
+import os
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
+@login_required
+def transbank_response_publicidad(request):
+    token = request.GET.get('token_ws')
+
+    if not token:
+        return redirect('solicitud_publicidad')
+
+    commerce_code = settings.TRANSBANK_CC_COMMERCE_CODE
+    api_key = settings.TRANSBANK_CC_API_KEY
+    environment = settings.TRANSBANK_CC_ENVIRONMENT
+
+    tx = Transaction(WebpayOptions(commerce_code, api_key, environment))
+    response = tx.commit(token)
+
+    if response['status'] == 'AUTHORIZED':
+        # Get the form data from the session
+        publicidad_data = request.session.get('publicidad_data', None)
+        if publicidad_data:
+            # Save the image file to the correct location
+            temp_image_path = os.path.join(settings.MEDIA_ROOT, 'temp_uploads', publicidad_data['imagen'])
+            final_image_path = os.path.join('publicidades/', publicidad_data['imagen'])
+            default_storage.save(final_image_path, default_storage.open(temp_image_path))
+
+            # Create the SolicitudPublicidad instance
+            SolicitudPublicidad.objects.create(
+                imagen=final_image_path,
+                tiempo=publicidad_data['tiempo'],
+                segundos=publicidad_data['segundos'],
+                precio=publicidad_data['precio']
+            )
+            # Clear the session data after saving
+            del request.session['publicidad_data']
+
+        # Retrieve the receipt URL
+        receipt_url = response.get('receipt_url', None)
+
+        if receipt_url:
+            return redirect(receipt_url)
+
+        messages.success(request, 'Publicidad pagada con éxito.')
+        return redirect('home')
+
+    messages.error(request, 'Error en el pago, por favor intente nuevamente.')
+    return redirect('solicitud_publicidad')
 
 from .models import SolicitudPublicidad
 def ver_solicitudes_view(request):
     solicitudes = SolicitudPublicidad.objects.all()
     return render(request, 'ver_solicitudes.html', {'solicitudes': solicitudes})
+
+
+
+
 
     # Obtener la instancia de Usuario correspondiente al User actual
     usuario = get_object_or_404(Usuario, email=request.user.email)
