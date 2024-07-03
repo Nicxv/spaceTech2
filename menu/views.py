@@ -882,7 +882,6 @@ def detalle_venta_ajax(request, venta_id):
 
 
 
-
 from django.shortcuts import render
 
 
