@@ -31,9 +31,9 @@ urlpatterns = [
     path('listaU/editar/<int:usuario_id>/', views.editar_usuario, name='editar_usuario'),
     path('listaP/eliminar/<int:producto_id>/', views.eliminar_producto, name='eliminar_producto'),
     path('listaP/modificar/<int:producto_id>/', views.modificarP, name='modificarP'),
-    path('publicidades/', listar_publicidades, name='listar_publicidades'),
-    path('publicidades/editar/<int:publicidad_id>/', editar_publicidad, name='editar_publicidad'),
-    path('publicidades/eliminar/<int:publicidad_id>/', eliminar_publicidad, name='eliminar_publicidad'),
+    
+    
+    
     
   
 
@@ -119,6 +119,10 @@ urlpatterns = [
 
     path('formulario_img/', formulario_img, name='formulario_img'),
     
+
+    path('publicidades/', listar_publicidades, name='listar_publicidades'),
+    path('publicidades/editar/<int:publicidad_id>/', editar_publicidad, name='editar_publicidad'),
+    path('publicidades/eliminar/<int:publicidad_id>/', eliminar_publicidad, name='eliminar_publicidad'),
 
      path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
      path('ver_solicitudes/', ver_solicitudes_view, name='ver_solicitudes'),

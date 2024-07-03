@@ -1455,7 +1455,7 @@ def transbank_response(request):
 
 @login_required
 def purchase_success(request):
-<<<<<<< HEAD
+
     return render(request, 'purchase_success.html')
 
 
@@ -1524,7 +1524,7 @@ from .models import SolicitudPublicidad
 def ver_solicitudes_view(request):
     solicitudes = SolicitudPublicidad.objects.all()
     return render(request, 'ver_solicitudes.html', {'solicitudes': solicitudes})
-=======
+
     # Obtener la instancia de Usuario correspondiente al User actual
     usuario = get_object_or_404(Usuario, email=request.user.email)
     
@@ -1541,4 +1541,4 @@ def ver_solicitudes_view(request):
         'venta': venta,
         'detalles': detalles
     })
->>>>>>> fb972689a1850bbf87acaf5efa068c346687a311
+
