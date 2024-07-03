@@ -883,7 +883,6 @@ def detalle_venta_ajax(request, venta_id):
 
 
 
-
 from django.shortcuts import render
 
 
@@ -1345,7 +1344,6 @@ def remover_de_home(request, producto_id):
 
 from django.utils import timezone
 
-# views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from transbank.webpay.webpay_plus.transaction import Transaction, WebpayOptions
@@ -1353,17 +1351,38 @@ from .models import Venta, DetalleVenta, Producto, Cart, CartItem, Usuario
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
+
+from django.contrib import messages
+
 @login_required
 def checkout(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
     items = CartItem.objects.filter(cart=cart)
     
-    total = sum(item.product.precio_venta * item.quantity for item in items)
-    
+    subtotal = sum(item.product.precio_venta * item.quantity for item in items)
+    iva = subtotal * 0.19  # Calcula el IVA del 19%
+    total = subtotal + iva
+
+    # Verificar stock antes de iniciar la transacción
+    stock_error = None
+    for item in items:
+        if item.quantity > item.product.stock_actual:
+            stock_error = f'No hay suficiente stock para {item.product.nombre_producto}. Quedan {item.product.stock_actual} unidades disponibles.'
+            break
+
+    if stock_error:
+        return render(request, 'checkout.html', {
+            'items': items, 
+            'subtotal': subtotal, 
+            'iva': iva, 
+            'total': total,
+            'stock_error': stock_error
+        })
+
     if request.method == 'POST':
         buy_order = str(int(timezone.now().timestamp() * 1000))  # Use a more unique buy_order
         session_id = str(request.user.id)  # Ensure session_id is a string
-        amount = str(total)  # Ensure amount is a string
+        amount = str(int(total))  # Ensure amount is a string
         return_url = request.build_absolute_uri('/transbank_response/')
         
         commerce_code = settings.TRANSBANK_CC_COMMERCE_CODE
@@ -1375,53 +1394,14 @@ def checkout(request):
         
         return redirect(response['url'] + '?token_ws=' + response['token'])
 
-    return render(request, 'checkout.html', {'items': items, 'total': total})
-
-@login_required
-def transbank_response(request):
-    token = request.GET.get('token_ws')
-    
-    if not token:
-        return redirect('view_cart')
-    
-    commerce_code = settings.TRANSBANK_CC_COMMERCE_CODE
-    api_key = settings.TRANSBANK_CC_API_KEY
-    environment = settings.TRANSBANK_CC_ENVIRONMENT
-    
-    tx = Transaction(WebpayOptions(commerce_code, api_key, environment))
-    response = tx.commit(token)
-    
-    if response['status'] == 'AUTHORIZED':
-        cart = Cart.objects.get(user=request.user)
-        items = CartItem.objects.filter(cart=cart)
-        
-        # Obtener la instancia de Usuario correspondiente al User actual
-        usuario = Usuario.objects.get(email=request.user.email)
-        
-        venta = Venta.objects.create(
-            usuario=usuario,
-            id_boleta=response['buy_order'],
-            fecha=timezone.now(),
-            subtotal=response['amount'],
-            iva=0,  # Calcula el IVA si es necesario
-            total=response['amount']
-        )
-        
-        for item in items:
-            DetalleVenta.objects.create(
-                venta=venta,
-                producto=item.product,
-                cantidad=item.quantity,
-                precio_unitario=item.product.precio_venta,
-                total=item.product.precio_venta * item.quantity
-            )
-        
-        items.delete()
-        return redirect('purchase_success')
-    
-    return redirect('view_cart')
-
+    return render(request, 'checkout.html', {
+        'items': items, 
+        'subtotal': subtotal, 
+        'iva': iva, 
+        'total': total
+    })
 # views.py
+
 @login_required
 def transbank_response(request):
     token = request.GET.get('token_ws')
@@ -1443,13 +1423,17 @@ def transbank_response(request):
         # Obtener la instancia de Usuario correspondiente al User actual
         usuario = Usuario.objects.get(email=request.user.email)
         
+        subtotal = sum(item.product.precio_venta * item.quantity for item in items)
+        iva = subtotal * 0.19  # Calcula el IVA del 19%
+        total = subtotal + iva
+        
         venta = Venta.objects.create(
             usuario=usuario,
             id_boleta=response['buy_order'],
             fecha=timezone.now(),
-            subtotal=response['amount'],
-            iva=0,  # Calcula el IVA si es necesario
-            total=response['amount']
+            subtotal=subtotal,
+            iva=iva,
+            total=total
         )
         
         for item in items:
@@ -1460,6 +1444,9 @@ def transbank_response(request):
                 precio_unitario=item.product.precio_venta,
                 total=item.product.precio_venta * item.quantity
             )
+            # Disminuir el stock del producto
+            item.product.stock_actual -= item.quantity
+            item.product.save()
         
         items.delete()
         return redirect('purchase_success')
@@ -1468,6 +1455,7 @@ def transbank_response(request):
 
 @login_required
 def purchase_success(request):
+<<<<<<< HEAD
     return render(request, 'purchase_success.html')
 
 
@@ -1536,3 +1524,21 @@ from .models import SolicitudPublicidad
 def ver_solicitudes_view(request):
     solicitudes = SolicitudPublicidad.objects.all()
     return render(request, 'ver_solicitudes.html', {'solicitudes': solicitudes})
+=======
+    # Obtener la instancia de Usuario correspondiente al User actual
+    usuario = get_object_or_404(Usuario, email=request.user.email)
+    
+    # Obtener la última venta del usuario
+    venta = Venta.objects.filter(usuario=usuario).order_by('-fecha').first()
+    
+    if not venta:
+        return redirect('view_cart')  # Redirigir al carrito si no hay ventas
+
+    # Obtener los detalles de la venta
+    detalles = DetalleVenta.objects.filter(venta=venta)
+
+    return render(request, 'purchase_success.html', {
+        'venta': venta,
+        'detalles': detalles
+    })
+>>>>>>> fb972689a1850bbf87acaf5efa068c346687a311
