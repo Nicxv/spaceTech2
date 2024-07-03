@@ -1,40 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
+{% load custom_filters %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .product-img {
+            width: 50px;
+            height: auto;
+            margin-right: 15px;
+        }
+        .product-details {
+            flex-grow: 1;
+        }
+        .product-name {
+            font-weight: bold;
+        }
+        .summary-card {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+        }
+        .total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: right;
+            color: #4a4a4a;
+        }
+        .btn-comprar {
+            margin-top: 20px;
+            float: right;
+        }
+    </style>
 </head>
 <body style="background-color: #eff0f1;">
     {% include "plantilla/menu.html" %}
     <div class="container mt-5">
-        <h2>Resumen de la Compra</h2>
+        {% if stock_error %}
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de Stock',
+                    text: '{{ stock_error }}',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+        {% endif %}
+        <h2 class="mb-4">Resumen de la Compra</h2>
         <div class="row">
             <div class="col-lg-8">
                 <ul class="list-group">
                     {% for item in items %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5>{{ item.product.nombre_producto }}</h5>
-                            <small>Cantidad: {{ item.quantity }}</small>
+                        <img src="{{ item.product.foto_producto.url }}" alt="{{ item.product.nombre_producto }}" class="product-img">
+                        <div class="product-details">
+                            <div class="product-name">{{ item.product.nombre_producto }}</div>
+                            <div>Cantidad: {{ item.quantity }}</div>
                         </div>
-                        <span>${{ item.product.precio_venta|floatformat:2 }}</span>
+                        <span>{{ item.product.precio_venta|format_price }}</span>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
             <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h4>Total: ${{ total|floatformat:2 }}</h4>
-                        <form method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary">Finalizar Compra</button>
-                        </form>
-                        <a href="/cart/" class="btn btn-secondary mt-2">Volver al Carrito</a>
-                    </div>
+                <div class="summary-card">
+                    <h4>Subtotal: {{ subtotal|format_price }}</h4>
+                    <h4>IVA (19%): {{ iva|format_price }}</h4>
+                    <h4 class="total">Total: {{ total|format_price }}</h4>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-comprar">Finalizar Compra</button>
+                    </form>
+                    <a href="/cart/" class="btn btn-secondary mt-2">Volver al Carrito</a>
                 </div>
             </div>
         </div>
