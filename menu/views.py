@@ -1499,7 +1499,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from .models import Publicidad
 from .forms import PublicidadForm
-
+@login_required
 def listar_publicidades(request):
     publicidades = Publicidad.objects.all()
     return render(request, 'listar_publicidades.html', {'publicidades': publicidades})
