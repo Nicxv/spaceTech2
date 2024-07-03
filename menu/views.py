@@ -17,8 +17,9 @@ from django.shortcuts import render
 
 
 def home_view(request):
-    productos = Producto.objects.all()
+    productos = Producto.objects.filter(mostrar_en_home=True)
     return render(request, 'home.html', {'productos': productos})
+
 def busqueda_productos(request):
 
     return render(request, "busqueda_productos.html")
@@ -1224,7 +1225,6 @@ from .models import Producto, DetalleCompra, Proveedor
 from .forms import ProductoInventarioForm
 from django.contrib import messages
 
-
 def inventario(request):
     if request.method == 'POST':
         producto_id = request.POST.get('producto_id')
@@ -1257,6 +1257,7 @@ def inventario(request):
         'form': form,
         'cantidades_esperadas': cantidades_esperadas
     })
+
 def subir_a_home(request, producto_id):
     if request.method == 'POST':
         producto = get_object_or_404(Producto, pk=producto_id)
@@ -1268,8 +1269,6 @@ def subir_a_home(request, producto_id):
 def detalle_producto_view(request, id_producto):
     producto = get_object_or_404(Producto, id_producto=id_producto)
     return render(request, 'detalle_producto.html', {'producto': producto})
-
-
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required

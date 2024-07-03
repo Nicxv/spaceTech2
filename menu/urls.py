@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from spacetech import settings
 from . import views
 from django.urls import path
-from .views import CustomPasswordResetConfirmView, aceptar_compra, add_to_cart, checkout, crear_producto, crear_proveedor, decrement_quantity, descargar_pdf2, editar_proveedor, eliminar_proveedor,  enviar_publicidad, increment_quantity, inventario, remove_from_cart,  ver_productos_proveedor, view_cart
+from .views import CustomPasswordResetConfirmView, aceptar_compra, add_to_cart, checkout, crear_producto, crear_proveedor, decrement_quantity, descargar_pdf2, editar_proveedor, eliminar_proveedor,  enviar_publicidad, increment_quantity, inventario, remove_from_cart, subir_a_home,  ver_productos_proveedor, view_cart
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
@@ -97,7 +97,7 @@ urlpatterns = [
 
     path('compra/<uuid:compra_id>/aceptar/', aceptar_compra, name='aceptar_compra'),
     path('inventario/', views.inventario, name='inventario'),
-    path('subir_a_home/<int:producto_id>/', views.subir_a_home, name='subir_a_home'),
+     path('subir_a_home/<int:producto_id>/', subir_a_home, name='subir_a_home'),
     path('producto/<int:id_producto>/', views.detalle_producto_view, name='detalle_producto'),
 
 
