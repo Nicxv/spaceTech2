@@ -20,9 +20,6 @@ def get_value(dictionary, key):
 def get_value_from_dict(dictionary, key):
     return dictionary.get(key, 0)
 
-
-
-
 @register.filter
 def multiply(value, arg):
     return value * arg
