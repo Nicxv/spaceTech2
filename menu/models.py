@@ -112,7 +112,7 @@ class Producto(models.Model):
     precio_costo = models.IntegerField(verbose_name='Precio de Costo')
     precio_venta = models.IntegerField(verbose_name='Precio de Venta', default=0)
     foto_producto = models.ImageField(upload_to='static/img/', verbose_name='Foto del Producto', null=True, blank=True)
-    mostrar_en_home = models.BooleanField(default=False, verbose_name='Mostrar en Home')
+    mostrar_en_home = models.BooleanField(default=False, verbose_name='Mostrar en Home')    
     
     def __str__(self):
         return self.nombre_producto
