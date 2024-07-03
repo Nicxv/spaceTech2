@@ -1334,27 +1334,6 @@ def view_cart(request):
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
-@login_required
-def checkout(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    items = CartItem.objects.filter(cart=cart)
-    
-    # Aquí puedes agregar lógica para procesar la compra,
-    # como calcular el total, aplicar descuentos, etc.
-    
-    total = sum(item.product.precio_venta * item.quantity for item in items)
-    
-    if request.method == 'POST':
-        # Procesar el pago y completar la compra
-        # Lógica para procesar el pago
-        # ...
-        
-        # Redirigir a una página de éxito de compra
-        return redirect('purchase_success')
-    
-    return render(request, 'checkout.html', {'items': items, 'total': total})
-
-
 def remover_de_home(request, producto_id):
     if request.method == 'POST':
         producto = get_object_or_404(Producto, pk=producto_id)
@@ -1362,3 +1341,130 @@ def remover_de_home(request, producto_id):
         producto.save()
         messages.success(request, 'Producto removido del Home.')
     return redirect('inventario')
+
+from django.utils import timezone
+
+# views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from django.conf import settings
+from transbank.webpay.webpay_plus.transaction import Transaction, WebpayOptions
+from .models import Venta, DetalleVenta, Producto, Cart, CartItem, Usuario
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+
+@login_required
+def checkout(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    items = CartItem.objects.filter(cart=cart)
+    
+    total = sum(item.product.precio_venta * item.quantity for item in items)
+    
+    if request.method == 'POST':
+        buy_order = str(int(timezone.now().timestamp() * 1000))  # Use a more unique buy_order
+        session_id = str(request.user.id)  # Ensure session_id is a string
+        amount = str(total)  # Ensure amount is a string
+        return_url = request.build_absolute_uri('/transbank_response/')
+        
+        commerce_code = settings.TRANSBANK_CC_COMMERCE_CODE
+        api_key = settings.TRANSBANK_CC_API_KEY
+        environment = settings.TRANSBANK_CC_ENVIRONMENT
+        
+        tx = Transaction(WebpayOptions(commerce_code, api_key, environment))
+        response = tx.create(buy_order, session_id, amount, return_url)
+        
+        return redirect(response['url'] + '?token_ws=' + response['token'])
+
+    return render(request, 'checkout.html', {'items': items, 'total': total})
+
+@login_required
+def transbank_response(request):
+    token = request.GET.get('token_ws')
+    
+    if not token:
+        return redirect('view_cart')
+    
+    commerce_code = settings.TRANSBANK_CC_COMMERCE_CODE
+    api_key = settings.TRANSBANK_CC_API_KEY
+    environment = settings.TRANSBANK_CC_ENVIRONMENT
+    
+    tx = Transaction(WebpayOptions(commerce_code, api_key, environment))
+    response = tx.commit(token)
+    
+    if response['status'] == 'AUTHORIZED':
+        cart = Cart.objects.get(user=request.user)
+        items = CartItem.objects.filter(cart=cart)
+        
+        # Obtener la instancia de Usuario correspondiente al User actual
+        usuario = Usuario.objects.get(email=request.user.email)
+        
+        venta = Venta.objects.create(
+            usuario=usuario,
+            id_boleta=response['buy_order'],
+            fecha=timezone.now(),
+            subtotal=response['amount'],
+            iva=0,  # Calcula el IVA si es necesario
+            total=response['amount']
+        )
+        
+        for item in items:
+            DetalleVenta.objects.create(
+                venta=venta,
+                producto=item.product,
+                cantidad=item.quantity,
+                precio_unitario=item.product.precio_venta,
+                total=item.product.precio_venta * item.quantity
+            )
+        
+        items.delete()
+        return redirect('purchase_success')
+    
+    return redirect('view_cart')
+
+# views.py
+@login_required
+def transbank_response(request):
+    token = request.GET.get('token_ws')
+    
+    if not token:
+        return redirect('view_cart')
+    
+    commerce_code = settings.TRANSBANK_CC_COMMERCE_CODE
+    api_key = settings.TRANSBANK_CC_API_KEY
+    environment = settings.TRANSBANK_CC_ENVIRONMENT
+    
+    tx = Transaction(WebpayOptions(commerce_code, api_key, environment))
+    response = tx.commit(token)
+    
+    if response['status'] == 'AUTHORIZED':
+        cart = Cart.objects.get(user=request.user)
+        items = CartItem.objects.filter(cart=cart)
+        
+        # Obtener la instancia de Usuario correspondiente al User actual
+        usuario = Usuario.objects.get(email=request.user.email)
+        
+        venta = Venta.objects.create(
+            usuario=usuario,
+            id_boleta=response['buy_order'],
+            fecha=timezone.now(),
+            subtotal=response['amount'],
+            iva=0,  # Calcula el IVA si es necesario
+            total=response['amount']
+        )
+        
+        for item in items:
+            DetalleVenta.objects.create(
+                venta=venta,
+                producto=item.product,
+                cantidad=item.quantity,
+                precio_unitario=item.product.precio_venta,
+                total=item.product.precio_venta * item.quantity
+            )
+        
+        items.delete()
+        return redirect('purchase_success')
+    
+    return redirect('view_cart')
+
+@login_required
+def purchase_success(request):
+    return render(request, 'purchase_success.html')

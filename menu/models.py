@@ -77,34 +77,6 @@ class Comuna(models.Model):
 
 
 
-
-class Venta(models.Model):
-    id = models.AutoField(primary_key=True)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    id_boleta = models.CharField(max_length=30)
-    fecha = models.DateTimeField(default=timezone.now)
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
-    iva = models.DecimalField(max_digits=10, decimal_places=2)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return f'Venta {self.id} - Usuario {self.usuario.nombre_usuario}'
-
-class DetalleVenta(models.Model):
-    venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
-    articulo = models.ForeignKey(Articulos, on_delete=models.CASCADE)
-    cantidad = models.IntegerField()
-    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return f'Detalle de Venta {self.venta.id} - Articulo {self.articulo.nombre}'
-
-
-
-
-
-
 class Imagen(models.Model):
     
     imagen = models.ImageField(upload_to='static/img/')
@@ -185,3 +157,25 @@ class CartItem(models.Model):
     product = models.ForeignKey(Producto, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     added_at = models.DateTimeField(default=timezone.now)
+
+class Venta(models.Model):
+    id = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    id_boleta = models.CharField(max_length=30)
+    fecha = models.DateTimeField(default=timezone.now)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    iva = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f'Venta {self.id} - Usuario {self.usuario.nombre_usuario}'
+
+class DetalleVenta(models.Model):
+    venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.IntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f'Detalle de Venta {self.venta.id} - Producto {self.producto.nombre_producto}'    

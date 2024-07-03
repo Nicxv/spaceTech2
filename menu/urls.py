@@ -109,7 +109,10 @@ urlpatterns = [
     path('increment_quantity/<int:item_id>/', increment_quantity, name='increment_quantity'),
     path('decrement_quantity/<int:item_id>/', decrement_quantity, name='decrement_quantity'),
     path('cart/', view_cart, name='view_cart'),
-     path('checkout/', checkout, name='checkout'),
+    path('checkout/', checkout, name='checkout'),
+    
+    path('transbank_response/', views.transbank_response, name='transbank_response'),
+    path('purchase_success/', views.purchase_success, name='purchase_success'),
 
 ]
 
