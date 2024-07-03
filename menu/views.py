@@ -1353,3 +1353,12 @@ def checkout(request):
         return redirect('purchase_success')
     
     return render(request, 'checkout.html', {'items': items, 'total': total})
+
+
+def remover_de_home(request, producto_id):
+    if request.method == 'POST':
+        producto = get_object_or_404(Producto, pk=producto_id)
+        producto.mostrar_en_home = False
+        producto.save()
+        messages.success(request, 'Producto removido del Home.')
+    return redirect('inventario')
