@@ -1455,8 +1455,30 @@ def transbank_response(request):
 
 @login_required
 def purchase_success(request):
+    # Obtener la instancia de Usuario correspondiente al User actual
+    usuario = get_object_or_404(Usuario, email=request.user.email)
+    
+    # Obtener la última venta del usuario
+    venta = Venta.objects.filter(usuario=usuario).order_by('-fecha').first()
+    
+    if not venta:
+        return redirect('view_cart')  # Redirigir al carrito si no hay ventas
 
-    return render(request, 'purchase_success.html')
+    # Obtener los detalles de la venta
+    detalles = DetalleVenta.objects.filter(venta=venta)
+
+    # Convertir valores a números antes de pasarlos a la plantilla
+    venta.subtotal = float(venta.subtotal)
+    venta.iva = float(venta.iva)
+    venta.total = float(venta.total)
+    for detalle in detalles:
+        detalle.precio_unitario = float(detalle.precio_unitario)
+        detalle.total = float(detalle.total)
+
+    return render(request, 'purchase_success.html', {
+        'venta': venta,
+        'detalles': detalles
+    })
 
 
 
@@ -1611,23 +1633,4 @@ def ver_solicitudes_view(request):
     return render(request, 'ver_solicitudes.html', {'solicitudes': solicitudes})
 
 
-
-
-
-    # Obtener la instancia de Usuario correspondiente al User actual
-    usuario = get_object_or_404(Usuario, email=request.user.email)
-    
-    # Obtener la última venta del usuario
-    venta = Venta.objects.filter(usuario=usuario).order_by('-fecha').first()
-    
-    if not venta:
-        return redirect('view_cart')  # Redirigir al carrito si no hay ventas
-
-    # Obtener los detalles de la venta
-    detalles = DetalleVenta.objects.filter(venta=venta)
-
-    return render(request, 'purchase_success.html', {
-        'venta': venta,
-        'detalles': detalles
-    })
 
