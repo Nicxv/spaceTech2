@@ -28,7 +28,7 @@ def home_view(request):
 
     combined_publicidades = publicidades + solicitudes_publicidades
 
-    productos = Producto.objects.all()  # Asegúrate de que esto esté definido
+    productos = Producto.objects.filter(mostrar_en_home=True)  # Solo productos mostrados en home
 
     return render(request, 'home.html', {
         'combined_publicidades': combined_publicidades,
@@ -1277,7 +1277,20 @@ def subir_a_home(request, producto_id):
         producto.mostrar_en_home = True
         producto.save()
         messages.success(request, 'Producto subido a Home.')
-    return redirect('inventario')
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+def remover_de_home(request, producto_id):
+    if request.method == 'POST':
+        producto = get_object_or_404(Producto, pk=producto_id)
+        producto.mostrar_en_home = False
+        producto.save()
+        messages.success(request, 'Producto removido del Home.')
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+
 
 def detalle_producto_view(request, id_producto):
     producto = get_object_or_404(Producto, id_producto=id_producto)
@@ -1347,13 +1360,7 @@ def view_cart(request):
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
-def remover_de_home(request, producto_id):
-    if request.method == 'POST':
-        producto = get_object_or_404(Producto, pk=producto_id)
-        producto.mostrar_en_home = False
-        producto.save()
-        messages.success(request, 'Producto removido del Home.')
-    return redirect('inventario')
+
 
 from django.utils import timezone
 
