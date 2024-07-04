@@ -1,3 +1,4 @@
+from datetime import timedelta
 import uuid
 from django.db import models
 from django.utils import timezone
@@ -201,6 +202,12 @@ class SolicitudPublicidad(models.Model):
     tiempo = models.IntegerField(choices=[(1, '1 Semana'), (2, '2 Semanas'), (4, '1 Mes'), (12, '3 Meses')])
     segundos = models.IntegerField()
     precio = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    fecha_vencimiento = models.DateTimeField(null=True, blank=True)
+    publicada = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"Publicidad - {self.get_tiempo_display()}, {self.segundos} segundos"
 
     def __str__(self):
         return f"Publicidad - {self.tiempo} semanas, {self.segundos} segundos"

@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from spacetech import settings
 from . import views
 from django.urls import path
-from .views import CustomPasswordResetConfirmView, aceptar_compra, add_to_cart, checkout, crear_producto, crear_proveedor, decrement_quantity, descargar_pdf2, editar_proveedor, editar_publicidad, eliminar_proveedor, eliminar_publicidad,  enviar_publicidad, formulario_img, increment_quantity, inventario, listar_publicidades,  remove_from_cart, remover_de_home, solicitud_publicidad_view, subir_a_home, transbank_response_publicidad,  ver_productos_proveedor, ver_solicitudes_view, view_cart
+from .views import CustomPasswordResetConfirmView, aceptar_compra, add_to_cart, checkout, crear_producto, crear_proveedor, decrement_quantity, descargar_pdf2, editar_proveedor, editar_publicidad, eliminar_proveedor, eliminar_publicidad, eliminar_solicitud_view,  enviar_publicidad, formulario_img, increment_quantity, inventario, listar_publicidades, publicar_solicitud_view,   remove_from_cart, remover_de_home, solicitud_publicidad_view, subir_a_home, transbank_response_publicidad,  ver_productos_proveedor, ver_solicitudes_view, view_cart
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
@@ -126,10 +126,12 @@ urlpatterns = [
 
      path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
      path('ver_solicitudes/', ver_solicitudes_view, name='ver_solicitudes'),
-
+    path('eliminar_solicitud/<int:id>/', eliminar_solicitud_view, name='eliminar_solicitud'),
 
      path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
     path('transbank_response_publicidad/', transbank_response_publicidad, name='transbank_response_publicidad'),
+     path('publicar_solicitud/<int:id>/', publicar_solicitud_view, name='publicar_solicitud'),
+     
 ]
 
 

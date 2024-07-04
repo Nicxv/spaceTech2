@@ -33,7 +33,15 @@
                     <td>{{ solicitud.segundos }} segundos</td>
                     <td>${{ solicitud.precio }}</td>
                     <td>
-                        <button type="button" class="btn btn-success check-btn">Chequear</button>
+                        <form action="{% url 'publicar_solicitud' solicitud.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Publicar</button>
+                        </form>
+                        <button type="button" class="btn btn-warning reject-btn">Rechazar</button>
+                        <form action="{% url 'eliminar_solicitud' solicitud.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

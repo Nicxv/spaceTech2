@@ -16,11 +16,24 @@ from menu.models import Articulos, Carrito, CarritoItem, Usuario, Venta, Detalle
 from django.shortcuts import render
 
 
-def home_view(request):
-    productos = Producto.objects.filter(mostrar_en_home=True)
-    publicidades = Publicidad.objects.filter(activa=True)
-    return render(request, 'home.html', {'productos': productos, 'publicidades': publicidades})
 
+def home_view(request):
+    publicidades = list(Publicidad.objects.all())
+    solicitudes = SolicitudPublicidad.objects.filter(publicada=True, fecha_vencimiento__gte=timezone.now())
+
+    # Convertir solicitudes a objetos Publicidad-like
+    solicitudes_publicidades = [
+        Publicidad(imagen=solicitud.imagen, duracion=solicitud.segundos) for solicitud in solicitudes
+    ]
+
+    combined_publicidades = publicidades + solicitudes_publicidades
+
+    productos = Producto.objects.all()  # Asegúrate de que esto esté definido
+
+    return render(request, 'home.html', {
+        'combined_publicidades': combined_publicidades,
+        'productos': productos
+    })
 
 def busqueda_productos(request):
 
@@ -1634,3 +1647,21 @@ def ver_solicitudes_view(request):
 
 
 
+def publicar_solicitud_view(request, id):
+    solicitud = get_object_or_404(SolicitudPublicidad, id=id)
+    if request.method == 'POST':
+        # Calcular la fecha de vencimiento
+        fecha_vencimiento = timezone.now() + timedelta(weeks=solicitud.tiempo)
+        solicitud.fecha_vencimiento = fecha_vencimiento
+        solicitud.publicada = True
+        solicitud.save()
+        messages.success(request, 'Solicitud publicada con éxito.')
+        return redirect('ver_solicitudes')
+    return redirect('ver_solicitudes')
+
+def eliminar_solicitud_view(request, id):
+    solicitud = get_object_or_404(SolicitudPublicidad, id=id)
+    if request.method == 'POST':
+        solicitud.delete()
+        messages.success(request, 'Solicitud eliminada con éxito.')
+    return redirect('ver_solicitudes')
