@@ -53,11 +53,11 @@
                                 
                                 <li><a class="dropdown-item" href="{% url 'listaU' %}">Usuarios</a></li>
                                 <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}">Registro de ventas</a></li>
-                                <li><a class="dropdown-item" href="{% url 'inventario' %}">   inventario</a></li>
+                                <li><a class="dropdown-item" href="{% url 'inventario' %}">   Inventario</a></li>
 
                                 <li><a class="dropdown-item" href="">Reportes</a></li>
                                 <li><a class="dropdown-item" href="{% url 'listar_proveedores' %}">Proveedor</a></li>
-                                <li><a class="dropdown-item" href="{% url 'listar_publicidades' %}">   publicidad</a></li>
+                                <li><a class="dropdown-item" href="{% url 'listar_publicidades' %}">Publicidad</a></li>
                                 
 
                             </ul>
@@ -69,7 +69,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}">Registro de ventas</a></li>
-                                <li><a class="dropdown-item" href="#">Recepción de Proveedor</a></li>
+                                <li><a class="dropdown-item" href="{% url 'recepcion_compra' %}">Recepción de Productos</a></li>
                             </ul>
                         </li>
                     {% endif %}
