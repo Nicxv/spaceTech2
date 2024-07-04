@@ -20,6 +20,21 @@
             max-width: 100%;
             height: auto;
         }
+        .modal-body p {
+            font-size: 1rem;
+        }
+        .modal-body p.important {
+            font-weight: bold;
+            color: #ff6347; /* Color más fuerte */
+        }
+        .modal-header {
+            justify-content: center;
+        }
+        #imagePreview {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -34,6 +49,7 @@
                     <div class="mb-3">
                         <label for="imagen" class="form-label">Imagen de la Publicidad</label>
                         {{ form.imagen }}
+                        <img id="imagePreview" src="#" alt="Vista previa de la imagen" style="display: none;">
                     </div>
                     <div class="mb-3">
                         <label for="id_tiempo" class="form-label">Tiempo de Publicación</label>
@@ -56,9 +72,9 @@
                     </div>
                     <div class="mb-3">
                         <label for="precio" class="form-label">Precio</label>
-                        <input type="text" class="form-control" id="precio" name="precio" placeholder="Precio por tiempo (en CLP)" readonly>
+                        <input type="text" class="form-control" id="precio" name="precio" placeholder="Precio por tiempo (en CLP)" readonly required>
                     </div>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#politicasModal">Enviar Solicitud de publicidad</button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#politicasModal" onclick="checkForm()">Enviar Solicitud de publicidad</button>
                 </form>
             </div>
             <div class="col-md-6">
@@ -74,21 +90,29 @@
 
     <!-- Modal -->
     <div class="modal fade" id="politicasModal" tabindex="-1" aria-labelledby="politicasModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl"> <!-- Modal más ancho -->
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="politicasModalLabel">Políticas de Publicidad</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>1. La imagen debe tener un tamaño específico.</p>
-                    <p>2. No se permiten imágenes relacionadas con temas políticos u obscenos.</p>
-                    <p>3. Si la imagen no cumple con las políticas, no será añadida a la página y el dinero no podrá ser reembolsado.</p>
+                    <p>1. La imagen debe tener un tamaño aproximado a 16:6 para que se vea correctamente en nuestra página.</p>
+                    <p>2. No se permiten imágenes relacionadas con temas políticos.</p>
+                    <p>3. No se permiten imágenes con contenido explícito, ofensivo o inapropiado.</p>
+                    <p>4. Las imágenes deben estar en alta resolución (mínimo 1920x720 píxeles) para garantizar una buena calidad de visualización.</p>
+                    <p>5. No se permiten imágenes con derechos de autor sin el permiso correspondiente.</p>
+                    <p>6. No se permiten imágenes que contengan información falsa o engañosa.</p>
+                    <p>7. No se permiten imágenes con contenido discriminatorio o de incitación al odio.</p>
+                    <p>8. No se permite el uso de imágenes que promuevan productos ilegales o servicios no permitidos por la ley.</p>
+                    <p class="important">9. Si la imagen no cumple con las políticas, no será añadida a la página y el dinero no podrá ser reembolsado.</p>
+                    <p class="important">10. La administración se reserva el derecho de eliminar cualquier imagen que considere inapropiada sin previo aviso.</p>
+                    <p class="important">11. Las imágenes deben cumplir con las leyes y regulaciones locales y nacionales.</p>
                     <p>¿Acepta estas condiciones?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="aceptar-politicas">Aceptar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 </div>
             </div>
         </div>
@@ -122,6 +146,41 @@
 
     document.getElementById('aceptar-politicas').addEventListener('click', function() {
         document.getElementById('publicidad-form').submit();
+    });
+
+    function checkForm() {
+        const form = document.getElementById('publicidad-form');
+        const requiredFields = form.querySelectorAll('[required]');
+        let allFilled = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value) {
+                allFilled = false;
+            }
+        });
+
+        if (allFilled) {
+            // Todos los campos requeridos están llenos, muestra el modal
+            const modal = new bootstrap.Modal(document.getElementById('politicasModal'));
+            modal.show();
+        } else {
+            // Hay campos vacíos, muestra un mensaje de alerta
+            alert('Por favor, rellene todos los campos requeridos antes de continuar.');
+        }
+    }
+
+    // Vista previa de la imagen seleccionada
+    document.getElementById('id_imagen').addEventListener('change', function(event) {
+        const [file] = event.target.files;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imagePreview = document.getElementById('imagePreview');
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>

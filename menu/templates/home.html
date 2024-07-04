@@ -10,8 +10,7 @@
     <script src="https://kit.fontawesome.com/a076d05399.js"></script> <!-- Font Awesome Icons -->
 </head>
 <body style="background-color: #eff0f1;">
-
-    {% include "plantilla/menu.html" %}
+  {% include "plantilla/menu.html" %}
     <div class="container mt-5">
         {% if messages %}
         <div class="alert alert-success mt-3" id="login-success-message">
@@ -21,7 +20,7 @@
         </div>
         {% endif %}
     </div>
-
+    
     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             {% for publicidad in combined_publicidades %}
@@ -74,7 +73,7 @@
             <h5 class="mb-3">Contacto</h5>
             <p>Correo: info@example.com</p>
             <p>Teléfono: +1234567890</p>
-            <a class="queso" href="{% url 'solicitud_publicidad' %}">Añade tu publicidad aqui</a>
+            <a class="queso" id="solicitudPublicidadLink" href="#">Añade tu publicidad aqui</a>
           </div>
           <div class="col-lg-4">
             <h5 class="mb-3">Redes Sociales</h5>
@@ -90,9 +89,40 @@
       </div>
     </footer>
 
+    <!-- Modal -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Acción Requerida</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Necesitas iniciar sesión o registrarte para añadir publicidad.</p>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <a href="{% url 'login' %}" class="btn btn-primary">Iniciar Sesión</a>
+                    <a href="{% url 'formulario' %}" class="btn btn-secondary">Registrarse</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+    <script>
+        const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}";
+        document.getElementById('solicitudPublicidadLink').addEventListener('click', function(event) {
+            event.preventDefault();
+            if (isAuthenticated === 'true') {
+                window.location.href = "{% url 'solicitud_publicidad' %}";
+            } else {
+                var authModal = new bootstrap.Modal(document.getElementById('authModal'));
+                authModal.show();
+            }
+        });
+    </script>
 </body>
 </html>
-    

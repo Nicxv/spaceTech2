@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,7 +35,6 @@
             <thead>
                 <tr>
                     <th>Imagen</th>
-                    <th>Tiempo (semanas)</th>
                     <th>Duración (segundos)</th>
                     <th>Acciones</th>
                 </tr>
@@ -49,8 +49,7 @@
                             No Image
                         {% endif %}
                     </td>
-                    <td>{{ publicidad.tiempo }}</td>
-                    <td>{{ publicidad.segundos }}</td>
+                    <td>{{ publicidad.duracion }}</td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ publicidad.id }}" data-bs-toggle="dropdown" aria-expanded="false">
