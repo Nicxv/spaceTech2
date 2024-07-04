@@ -207,7 +207,7 @@ def formulario(request):
             usuario.role = 'CLIENT'  # Asignar el rol de cliente
             usuario.save()
             messages.success(request, 'Registro exitoso. Ahora puedes iniciar sesión.')
-            return redirect('login')  # Redirigir a la página de login después del registro
+            return redirect('home')  # Redirigir a la página de login después del registro
         else:
             mensaje_error = "Por favor, corrige los errores del formulario."
     else:
