@@ -143,6 +143,7 @@ def listaU(request):
     roles = Usuario.ROLE_CHOICES
     return render(request, 'listaU.html', {'usuarios': usuarios, 'roles': roles})
 
+
 @login_required
 def listaP(request):
     productos = Articulos.objects.all()  # Recupera todos los usuarios
@@ -194,9 +195,6 @@ def menu(request):
 
 def formulario(request):
     # Redirige a la página principal si el usuario ya está autenticado
-    if request.user.is_authenticated:
-        return redirect('listaU')
-
     mensaje_exito = None
     mensaje_error = None
 
