@@ -45,18 +45,7 @@ urlpatterns = [
     path('decrementar_cantidad/<int:item_id>/', views.decrementar_cantidad, name='decrementar_cantidad'),
     path('carrito/', views.ver_carrito, name='ver_carrito'),
 
-
-    path('recuperar_contraseña/', auth_views.PasswordResetView.as_view(template_name='recuperar_contraseña.html'), name='password_reset'),
-    path('recuperar_contraseña/enviado/', auth_views.PasswordResetDoneView.as_view(template_name='password_reset_done.html'), name='password_reset_done'),
-    path('recuperar_contraseña/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('recuperar_contraseña/completo/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
-   
-   
     path('comprar/', views.comprar, name='comprar'),
-
-
-    
-
 
     path('venta_productos/', views.venta_productos, name='venta_productos'),
     path('guardar_direccion/', views.guardar_direccion, name='guardar_direccion'),
