@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
     {% load static %}
-    {% load custom_filters%}
+    {% load custom_filters %}
 <head>
     <meta charset="UTF-8">
     <title>Inicio</title>
@@ -40,7 +40,9 @@
     </div>
 
     <div class="container mt-5">
-        <h2>Resultados de la búsqueda para "{{ query }}"</h2>
+        {% if query %}
+            <h2>Resultados de la búsqueda para "{{ query }}"</h2>
+        {% endif %}
         <div class="row">
             {% if productos %}
                 {% for producto in productos %}
@@ -61,7 +63,9 @@
                 </div>
                 {% endfor %}
             {% else %}
-                <p>No se encontraron productos para "{{ query }}".</p>
+                {% if query %}
+                    <p>No se encontraron productos para "{{ query }}".</p>
+                {% endif %}
             {% endif %}
         </div>
     </div>

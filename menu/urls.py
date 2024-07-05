@@ -109,6 +109,7 @@ urlpatterns = [
 
     path('formulario_img/', formulario_img, name='formulario_img'),
     
+    
 
     path('publicidades/', listar_publicidades, name='listar_publicidades'),
     path('publicidades/editar/<int:publicidad_id>/', editar_publicidad, name='editar_publicidad'),
