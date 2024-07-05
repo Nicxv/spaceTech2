@@ -58,7 +58,7 @@
                 <p class="total"><strong>Total:</strong> {{ venta.total|format_price }}</p>
             </div>
             <ul class="list-group">
-                {% for detalle in detalles %}
+                {% for detalle in detalles %} 
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <img src="{{ detalle.producto.foto_producto.url }}" alt="{{ detalle.producto.nombre_producto }}" class="product-img">
                     <div class="product-details">

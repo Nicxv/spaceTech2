@@ -27,15 +27,77 @@
             border: 1px solid #dee2e6;
             border-radius: 10px;
         }
-        .total {
-            font-size: 1.5rem;
+        .total, .summary-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
             font-weight: bold;
-            text-align: right;
             color: #4a4a4a;
+        }
+        .summary-item span {
+            font-weight: normal;
         }
         .btn-comprar {
             margin-top: 20px;
             float: right;
+        }
+        .map-container {
+            display: none;
+            margin-top: 20px;
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        .link-maps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background-color: transparent;
+            color: #4285f4;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .link-maps:hover {
+            color: #357ae8;
+        }
+        .link-maps i {
+            margin-right: 5px;
+        }
+        .link-close-map {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background-color: transparent;
+            color: #dc3545;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .link-close-map:hover {
+            color: #c82333;
+        }
+        .link-close-map i {
+            margin-right: 5px;
+        }
+        .border-purple {
+            border: 2px solid #8C52FF;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .title-border {
+            border-bottom: 2px solid #8C52FF;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4a4a4a;
         }
     </style>
 </head>
@@ -52,27 +114,57 @@
                 });
             </script>
         {% endif %}
-        <h2 class="mb-4">Resumen de la Compra</h2>
+        <div class="title-border">Resumen de la Compra</div>
         <div class="row">
             <div class="col-lg-8">
-                <ul class="list-group">
-                    {% for item in items %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <img src="{{ item.product.foto_producto.url }}" alt="{{ item.product.nombre_producto }}" class="product-img">
-                        <div class="product-details">
-                            <div class="product-name">{{ item.product.nombre_producto }}</div>
-                            <div>Cantidad: {{ item.quantity }}</div>
+                <div class="border-purple">
+                    <div class="summary-card mb-4">
+                        <h5>Retiro en local</h5>
+                        <p>Dirección: Piedra Roja 125, Quilicura, Chile</p>
+                        <a href="#" id="show-map" class="link-maps">
+                            <i class="fas fa-map-marker-alt"></i> Ver en Mapa
+                        </a>
+                        <a href="#" id="close-map" class="link-close-map">
+                            <i class="fas fa-times"></i> Cerrar Mapa
+                        </a>
+                        <div class="map-container" id="map-container">
+                            <div id="map"></div>
                         </div>
-                        <span>{{ item.product.precio_venta|format_price }}</span>
-                    </li>
-                    {% endfor %}
-                </ul>
+                    </div>
+                    <ul class="list-group">
+                        {% for item in items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <img src="{{ item.product.foto_producto.url }}" alt="{{ item.product.nombre_producto }}" class="product-img">
+                            <div class="product-details">
+                                <div class="product-name">{{ item.product.nombre_producto }}</div>
+                                <div>Cantidad: {{ item.quantity }}</div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="me-3">{{ item.product.precio_venta|format_price }}</span>
+                                <a href="{% url 'remove_from_cart' item.id %}" class="text-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
             <div class="col-lg-4">
                 <div class="summary-card">
-                    <h4>Subtotal: {{ subtotal|format_price }}</h4>
-                    <h4>IVA (19%): {{ iva|format_price }}</h4>
-                    <h4 class="total">Total: {{ total|format_price }}</h4>
+                    <div class="summary-item">
+                        <span>Subtotal:</span>
+                        <span>{{ subtotal|format_price }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>IVA (19%):</span>
+                        <span>{{ iva|format_price }}</span>
+                    </div>
+                    <div class="total">
+                        <span>Total:</span>
+                        <span>{{ total|format_price }}</span>
+                    </div>
+                    <hr>
                     <form method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary btn-comprar">Finalizar Compra</button>
@@ -83,5 +175,35 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUjMYm_HVdhncKSb4nvc8e4Br3-pbfbfc&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            const localLatLng = { lat: -33.363481, lng: -70.715506 };
+            const map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: localLatLng,
+            });
+            const marker = new google.maps.Marker({
+                position: localLatLng,
+                map: map,
+                title: 'Ubicación del Local'
+            });
+        }
+
+        document.getElementById('show-map').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('map-container').style.display = 'block';
+            document.getElementById('close-map').style.display = 'flex';
+            document.getElementById('show-map').style.display = 'none';
+            initMap();
+        });
+
+        document.getElementById('close-map').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('map-container').style.display = 'none';
+            document.getElementById('close-map').style.display = 'none';
+            document.getElementById('show-map').style.display = 'flex';
+        });
+    </script>
 </body>
 </html>

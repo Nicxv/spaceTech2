@@ -1394,7 +1394,8 @@ def checkout(request):
             'subtotal': subtotal, 
             'iva': iva, 
             'total': total,
-            'stock_error': stock_error
+            'stock_error': stock_error,
+            'direccion_local': 'Av. Ejemplo 123, Ciudad, País'
         })
 
     if request.method == 'POST':
@@ -1416,7 +1417,8 @@ def checkout(request):
         'items': items, 
         'subtotal': subtotal, 
         'iva': iva, 
-        'total': total
+        'total': total,
+        'direccion_local': 'Av. Ejemplo 123, Ciudad, País'
     })
 # views.py
 
