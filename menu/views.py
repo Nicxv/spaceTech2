@@ -870,6 +870,7 @@ def gestion_ventas(request):
     query = request.GET.get('q')
     date_from = request.GET.get('date_from')
     date_to = request.GET.get('date_to')
+    estado = request.GET.get('estado')
 
     ventas = Venta.objects.select_related('usuario').all()
 
@@ -882,8 +883,26 @@ def gestion_ventas(request):
     if date_to:
         ventas = ventas.filter(fecha__lte=date_to)
 
+    if estado:
+        ventas = ventas.filter(estado=estado)
+
     context = {'ventas': ventas}
     return render(request, 'gestion_ventas.html', context)
+
+@csrf_exempt
+def cambiar_estado_venta(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            venta_id = data.get('venta_id')
+            nuevo_estado = data.get('nuevo_estado')
+            venta = get_object_or_404(Venta, id=venta_id)
+            venta.estado = nuevo_estado
+            venta.save()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 def detalle_venta_ajax(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
@@ -1453,7 +1472,9 @@ def transbank_response(request):
             fecha=timezone.now(),
             subtotal=subtotal,
             iva=iva,
-            total=total
+            total=total,
+            direccion_retiro="Piedra Roja 125, Quilicura, Chile",  # Dirección de retiro
+            estado='Pendiente'  # Estado de la venta
         )
         
         for item in items:

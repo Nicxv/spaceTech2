@@ -159,7 +159,13 @@ class CartItem(models.Model):
     quantity = models.IntegerField(default=1)
     added_at = models.DateTimeField(default=timezone.now)
 
+# models.py
 class Venta(models.Model):
+    ESTADO_CHOICES = [
+        ('Pendiente', 'Pendiente'),
+        ('Entregado', 'Entregado'),
+    ]
+    
     id = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     id_boleta = models.CharField(max_length=30)
@@ -167,9 +173,12 @@ class Venta(models.Model):
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     iva = models.DecimalField(max_digits=10, decimal_places=2)
     total = models.DecimalField(max_digits=10, decimal_places=2)
+    direccion_retiro = models.CharField(max_length=255, default="Piedra Roja 125, Quilicura, Chile")  # Dirección de retiro
+    estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='Pendiente')  # Estado de la venta
 
     def __str__(self):
         return f'Venta {self.id} - Usuario {self.usuario.nombre_usuario}'
+
 
 class DetalleVenta(models.Model):
     venta = models.ForeignKey(Venta, on_delete=models.CASCADE)

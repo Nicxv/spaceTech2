@@ -53,7 +53,7 @@
                     </a>
                     <div class="card-body text-start">
                         <h5 class="card-title">{{ producto.nombre_producto }}</h5>
-                        <p class="card-text">${{ producto.precio_venta }}</p>
+                        <p class="card-text">{{ producto.precio_venta|format_price }}</p>
                     </div>
                 </div>
             </div>

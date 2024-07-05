@@ -44,21 +44,22 @@
 </head>
 <body style="background-color: #eff0f1;">
     {% include "plantilla/menu.html" %}
-    <div class="container"> 
+    <div class="container">
         <div class="receipt">
             <div class="receipt-header">
                 <h2>Compra Exitosa</h2>
                 <p>Gracias por su compra, {{ venta.usuario.nombre }} {{ venta.usuario.apellido }}.</p>
             </div>
             <div class="receipt-details">
-                <p><strong>ID Boleta:</strong> {{ venta.id_boleta }}</p>
+                <p><strong>Orden de compra:</strong> {{ venta.id_boleta }}</p>
                 <p><strong>Fecha:</strong> {{ venta.fecha }}</p>
+                <p><strong>Dirección de Retiro:</strong> {{ venta.direccion_retiro }}</p>
                 <p><strong>Subtotal:</strong> {{ venta.subtotal|format_price }}</p>
                 <p><strong>IVA (19%):</strong> {{ venta.iva|format_price }}</p>
                 <p class="total"><strong>Total:</strong> {{ venta.total|format_price }}</p>
             </div>
             <ul class="list-group">
-                {% for detalle in detalles %} 
+                {% for detalle in detalles %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <img src="{{ detalle.producto.foto_producto.url }}" alt="{{ detalle.producto.nombre_producto }}" class="product-img">
                     <div class="product-details">

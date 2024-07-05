@@ -105,6 +105,7 @@ urlpatterns = [
     
     path('transbank_response/', views.transbank_response, name='transbank_response'),
     path('purchase_success/', views.purchase_success, name='purchase_success'),
+    path('cambiar_estado_venta/', views.cambiar_estado_venta, name='cambiar_estado_venta'),
 
     path('formulario_img/', formulario_img, name='formulario_img'),
     
@@ -120,6 +121,7 @@ urlpatterns = [
      path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
     path('transbank_response_publicidad/', transbank_response_publicidad, name='transbank_response_publicidad'),
      path('publicar_solicitud/<int:id>/', publicar_solicitud_view, name='publicar_solicitud'),
+
      
 ]
 

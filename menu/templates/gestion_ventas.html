@@ -28,6 +28,19 @@
         .btn-icon {
             padding: 5px 10px;
         }
+        .estado-pendiente {
+            color: #ffc107;
+        }
+        .estado-entregado {
+            color: #28a745;
+        }
+        .estado-icon {
+            margin-left: 10px;
+        }
+        .estado-container {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -39,14 +52,21 @@
             <div class="card-body">
                 <form method="get" class="mb-4">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <input type="text" name="q" class="form-control" placeholder="Buscar por ID o Cliente" value="{{ request.GET.q }}">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <input type="date" name="date_from" class="form-control" placeholder="Fecha desde" value="{{ request.GET.date_from }}">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <input type="date" name="date_to" class="form-control" placeholder="Fecha hasta" value="{{ request.GET.date_to }}">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="estado" class="form-control">
+                                <option value="">Filtrar por Estado</option>
+                                <option value="Pendiente" {% if request.GET.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                                <option value="Entregado" {% if request.GET.estado == 'Entregado' %}selected{% endif %}>Entregado</option>
+                            </select>
                         </div>
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-primary w-100">Filtrar</button>
@@ -61,6 +81,7 @@
                                 <th>Cliente</th>
                                 <th>Fecha</th>
                                 <th>Monto</th>
+                                <th>Estado</th>
                                 <th class="table-actions">Acciones</th>
                             </tr>
                         </thead>
@@ -71,6 +92,19 @@
                                 <td>{{ venta.usuario.nombre_usuario }}</td>
                                 <td>{{ venta.fecha }}</td>
                                 <td>{{ venta.total|format_price }}</td>
+                                <td>
+                                    <div class="estado-container">
+                                        <select class="form-select cambiar-estado" data-venta-id="{{ venta.id }}">
+                                            <option value="Pendiente" {% if venta.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                                            <option value="Entregado" {% if venta.estado == 'Entregado' %}selected{% endif %}>Entregado</option>
+                                        </select>
+                                        {% if venta.estado == 'Pendiente' %}
+                                        <i class="fas fa-circle estado-icon estado-pendiente" title="Pendiente"></i>
+                                        {% elif venta.estado == 'Entregado' %}
+                                        <i class="fas fa-check-circle estado-icon estado-entregado" title="Entregado"></i>
+                                        {% endif %}
+                                    </div>
+                                </td>
                                 <td class="table-actions">
                                     <button class="btn btn-info btn-icon" data-bs-toggle="modal" data-bs-target="#detalleVentaModal" data-id="{{ venta.id }}" title="Ver Detalles"><i class="fas fa-eye"></i></button>
                                 </td>
@@ -119,6 +153,43 @@
                         document.getElementById('detalleVentaContent').innerHTML = html;
                     })
                     .catch(error => console.log('Error:', error));
+            });
+
+            document.querySelectorAll('.cambiar-estado').forEach(function(select) {
+                select.addEventListener('change', function(event) {
+                    var ventaId = event.target.getAttribute('data-venta-id');
+                    var nuevoEstado = event.target.value;
+
+                    fetch("{% url 'cambiar_estado_venta' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({
+                            'venta_id': ventaId,
+                            'nuevo_estado': nuevoEstado
+                        })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Error al cambiar el estado de la venta.');
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('Estado de la venta actualizado correctamente.');
+                            location.reload(); // Recargar la página para reflejar el cambio de estado
+                        } else {
+                            alert('Error al cambiar el estado de la venta.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error al cambiar el estado de la venta.');
+                    });
+                });
             });
         });
     </script>
