@@ -114,13 +114,14 @@ urlpatterns = [
     path('publicidades/editar/<int:publicidad_id>/', editar_publicidad, name='editar_publicidad'),
     path('publicidades/eliminar/<int:publicidad_id>/', eliminar_publicidad, name='eliminar_publicidad'),
 
-     path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
-     path('ver_solicitudes/', ver_solicitudes_view, name='ver_solicitudes'),
+    path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
+    path('ver_solicitudes/', ver_solicitudes_view, name='ver_solicitudes'),
     path('eliminar_solicitud/<int:id>/', eliminar_solicitud_view, name='eliminar_solicitud'),
 
-     path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
+    path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
     path('transbank_response_publicidad/', transbank_response_publicidad, name='transbank_response_publicidad'),
-     path('publicar_solicitud/<int:id>/', publicar_solicitud_view, name='publicar_solicitud'),
+    path('publicar_solicitud/<int:id>/', publicar_solicitud_view, name='publicar_solicitud'),
+    path('search/', views.search_view, name='search'),
 
      
 ]

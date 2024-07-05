@@ -1,7 +1,7 @@
-{% load static %}
-{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="es">
+    {% load static %}
+    {% load custom_filters%}
 <head>
     <meta charset="UTF-8">
     <title>Inicio</title>
@@ -40,24 +40,29 @@
     </div>
 
     <div class="container mt-5">
+        <h2>Resultados de la búsqueda para "{{ query }}"</h2>
         <div class="row">
-            {% for producto in productos %}
-            <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
-                <div class="card h-100">
-                    <a href="{% url 'detalle_producto' producto.id_producto %}">
-                        {% if producto.foto_producto %}
-                            <img class="card-img-top img-fluid" src="{{ producto.foto_producto.url }}" alt="{{ producto.nombre_producto }}">
-                        {% else %}
-                            <img class="card-img-top img-fluid" src="{% static 'img/default_product.png' %}" alt="No image available">
-                        {% endif %}
-                    </a>
-                    <div class="card-body text-start">
-                        <h5 class="card-title">{{ producto.nombre_producto }}</h5>
-                        <p class="card-text">{{ producto.precio_venta|format_price }}</p>
+            {% if productos %}
+                {% for producto in productos %}
+                <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+                    <div class="card h-100">
+                        <a href="{% url 'detalle_producto' producto.id_producto %}">
+                            {% if producto.foto_producto %}
+                                <img class="card-img-top img-fluid" src="{{ producto.foto_producto.url }}" alt="{{ producto.nombre_producto }}">
+                            {% else %}
+                                <img class="card-img-top img-fluid" src="{% static 'img/default_product.png' %}" alt="No image available">
+                            {% endif %}
+                        </a>
+                        <div class="card-body text-start">
+                            <h5 class="card-title">{{ producto.nombre_producto }}</h5>
+                            <p class="card-text">{{ producto.precio_venta|format_price }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p>No se encontraron productos para "{{ query }}".</p>
+            {% endif %}
         </div>
     </div>
 

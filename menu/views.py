@@ -18,6 +18,12 @@ from django.shortcuts import render
 
 
 def home_view(request):
+    query = request.GET.get('q', '')
+    if query:
+        productos = Producto.objects.filter(nombre_producto__icontains=query)
+    else:
+        productos = Producto.objects.filter(mostrar_en_home=True)  # Solo productos mostrados en home
+
     publicidades = list(Publicidad.objects.all())
     solicitudes = SolicitudPublicidad.objects.filter(publicada=True, fecha_vencimiento__gte=timezone.now())
 
@@ -28,12 +34,18 @@ def home_view(request):
 
     combined_publicidades = publicidades + solicitudes_publicidades
 
-    productos = Producto.objects.filter(mostrar_en_home=True)  # Solo productos mostrados en home
-
     return render(request, 'home.html', {
         'combined_publicidades': combined_publicidades,
-        'productos': productos
+        'productos': productos,
+        'query': query,
+        'user': request.user,
+        
     })
+
+def search_view(request):
+    query = request.GET.get('q', '')
+    productos = Producto.objects.filter(nombre_producto__icontains=query) if query else []
+    return render(request, 'search_results.html', {'productos': productos, 'query': query})
 
 def busqueda_productos(request):
 
