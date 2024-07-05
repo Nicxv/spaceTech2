@@ -122,7 +122,6 @@ urlpatterns = [
     path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
     path('transbank_response_publicidad/', transbank_response_publicidad, name='transbank_response_publicidad'),
     path('publicar_solicitud/<int:id>/', publicar_solicitud_view, name='publicar_solicitud'),
-    path('search/', views.search_view, name='search'),
 
      
 ]

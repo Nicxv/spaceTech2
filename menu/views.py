@@ -39,13 +39,9 @@ def home_view(request):
         'productos': productos,
         'query': query,
         'user': request.user,
-        
     })
 
-def search_view(request):
-    query = request.GET.get('q', '')
-    productos = Producto.objects.filter(nombre_producto__icontains=query) if query else []
-    return render(request, 'search_results.html', {'productos': productos, 'query': query})
+
 
 def busqueda_productos(request):
 

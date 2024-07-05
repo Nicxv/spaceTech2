@@ -9,17 +9,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         .cart-badge {
-            position: absolute;
-            top: 1px;
-            right: -5px;
             background-color: red;
             color: white;
             border-radius: 50%;
             padding: 2px 7px;
             font-size: 10px;
+            display: inline-block;
+            margin-left: 5px;
         }
         .cart-icon {
-            position: relative;
+            display: flex;
+            align-items: center;
         }
         .modal-content {
             background-color: rgba(255, 255, 255, 0.9);
@@ -36,11 +36,14 @@
         .btn-primary:hover {
             background-color: #5a379d;
         }
+        .nav-link i, .dropdown-item i {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body style="background-color: rgb(238, 238, 238);">
 
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
         <a href="/">
             <img src="{% static 'img/SpaceLogo.png' %}" width="150px" alt="logo">
@@ -51,73 +54,69 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Inicio</a>
+                    <a class="nav-link active" aria-current="page" href="/"><i class="fas fa-home"></i>Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Telefonía</a>
+                    <a class="nav-link active" aria-current="page" href="#"><i class="fas fa-phone"></i>Telefonía</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Computación</a>
+                    <a class="nav-link" href="#"><i class="fas fa-desktop"></i>Computación</a>
                 </li>
                 {% if user.is_authenticated %}
                     {% if request.session.role == 'ADMIN' %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Administrador 
+                                <i class="fas fa-user-shield"></i>Administrador 
                             </a>
                             <ul class="dropdown-menu">
-                                
-                                <li><a class="dropdown-item" href="{% url 'listaU' %}">Usuarios</a></li>
-                                <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}">Registro de ventas</a></li>
-                                <li><a class="dropdown-item" href="{% url 'inventario' %}">   Inventario</a></li>
-
-                                <li><a class="dropdown-item" href="">Reportes</a></li>
-                                <li><a class="dropdown-item" href="{% url 'listar_proveedores' %}">Proveedor</a></li>
-                                <li><a class="dropdown-item" href="{% url 'listar_publicidades' %}">Publicidad</a></li>
-                                
-
+                                <li><a class="dropdown-item" href="{% url 'listaU' %}"><i class="fas fa-users"></i>Usuarios</a></li>
+                                <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}"><i class="fas fa-receipt"></i>Registro de ventas</a></li>
+                                <li><a class="dropdown-item" href="{% url 'inventario' %}"><i class="fas fa-boxes"></i>Inventario</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-chart-bar"></i>Reportes</a></li>
+                                <li><a class="dropdown-item" href="{% url 'listar_proveedores' %}"><i class="fas fa-truck"></i>Proveedor</a></li>
+                                <li><a class="dropdown-item" href="{% url 'listar_publicidades' %}"><i class="fas fa-ad"></i>Publicidad</a></li>
                             </ul>
                         </li>
                     {% elif request.session.role == 'BODEGA' %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Bodeguero
+                                <i class="fas fa-warehouse"></i>Bodeguero
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}">Registro de ventas</a></li>
-                                <li><a class="dropdown-item" href="{% url 'inventario' %}">Inventario</a></li>
+                                <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}"><i class="fas fa-receipt"></i>Registro de ventas</a></li>
+                                <li><a class="dropdown-item" href="{% url 'inventario' %}"><i class="fas fa-boxes"></i>Inventario</a></li>
                             </ul>
                         </li>
                     {% endif %}
                 {% endif %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Inicia sesión
+                        <i class="fas fa-sign-in-alt"></i>Inicia sesión
                     </a>
                     <ul class="dropdown-menu">
                         {% if user.is_authenticated %}
-                        <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión <i class="fa-solid fa-user-slash" style="margin-left: 5px;"></i></a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa-solid fa-user-slash"></i>Cerrar sesión</a></li>
                         {% else %}
-                        <li><a class="dropdown-item" href="#" id="loginLink"> Inicia sesión <i class="fa-solid fa-user" style="margin-left: 15px;"></i></a></li>
-                        <li><a class="dropdown-item" href="{% url 'formulario' %}">Regístrate <i class="fa-regular fa-user" style="margin-left: 30px;"></i></a></li>
+                        <li><a class="dropdown-item" href="#" id="loginLink"><i class="fa-solid fa-user"></i>Inicia sesión</a></li>
+                        <li><a class="dropdown-item" href="{% url 'formulario' %}"><i class="fa-regular fa-user"></i>Regístrate</a></li>
                         {% endif %}
-                        <li><a class="dropdown-item" href="{% url 'profile' %}">Mi cuenta <i class="fa-solid fa-id-card" style="margin-left: 35px;"></i></a></li>
+                        <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fa-solid fa-id-card"></i>Mi cuenta</a></li>
                     </ul>
                 </li>
                 <ul class="navbar-nav mb-2 mb-lg-0">
-                  <li class="nav-item">
-                      <a class="nav-link cart-icon" href="{% url 'view_cart' %}">
-                        <i class="fas fa-shopping-cart"></i>
-                        {% if carrito_items_count > 0 %}
-                          <span class="cart-badge">{{ carrito_items_count }}</span>
-                        {% endif %}
-                      </a>
-                  </li>
-              </ul>
+                    <li class="nav-item">
+                        <a class="nav-link cart-icon" href="{% url 'view_cart' %}">
+                            <i class="fas fa-shopping-cart"></i>Carrito
+                            {% if carrito_items_count %}
+                            <span class="cart-badge">{{ carrito_items_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
             </ul>
-            <form class="d-flex" role="search" action="{% url 'search' %}">
+            <form class="d-flex" role="search" action="/" method="get">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q">
-                <button class="btn btn-outline-success" type="submit">Buscar</button>
+                <button class="btn btn-outline-success" type="submit"><i class="fas fa-search"></i>Buscar</button>
             </form>
         </div>
     </div>
