@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
-
 {% load custom_filters %}
 <head>
     <meta charset="UTF-8">
@@ -103,7 +102,7 @@
             <div class="col-lg-4">
                 <div class="resume">
                     <h4>Resumen de la compra</h4>
-                    <div>Productos: {{ items|length }}</div>
+                    <div>Productos: {{ total_products }}</div>  <!-- Usar la nueva variable total_products -->
                     <div class="total">Total: {{ total|format_price }}</div>
                     <form action="{% url 'checkout' %}" method="get">
                         <button type="submit" class="btn btn-primary btn-comprar">Continuar Compra</button>
