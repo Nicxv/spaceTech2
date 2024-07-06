@@ -144,7 +144,7 @@
             </ul>
             <form class="d-flex" role="search" action="/" method="get">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q">
-                <button class="btn btn-outline-success" type="submit"><i class="fas fa-search"></i>Buscar</button>
+                <button class="btn btn-outline-success" type="submit"></i>Buscar</button>
             </form>
         </div>
     </div>
@@ -174,7 +174,7 @@
                         <p class="texto mb-2">¿No tienes cuenta? <a class="link" href="{% url 'formulario' %}">Regístrate</a></p>
                         <button type="submit" class="btn btn-primary">Iniciar sesión</button>
                     </div>
-<<<<<<< HEAD
+
                 </form>
                 {% if messages %}
                     {% for message in messages %}
@@ -186,18 +186,6 @@
             </div>
         </div>
     </div>
-=======
-            </form>
-{% if messages %}
-{% for message in messages %}
-                <div class="alert {% if message.tags == "success" %}alert-success{% else %}alert-danger{% endif %} mt-3">
-                    <p>{{ message }}</p>
-               </div>
-{% endfor %}
-{% endif %}
-          </div>
-      </div>
->>>>>>> 9da62b422fc88fa34f54b94536ad53e7cc0184da
 </div>
 
 <!-- Scripts de Bootstrap -->
