@@ -122,12 +122,12 @@ urlpatterns = [
     path('solicitud_publicidad/', solicitud_publicidad_view, name='solicitud_publicidad'),
     path('transbank_response_publicidad/', transbank_response_publicidad, name='transbank_response_publicidad'),
     path('publicar_solicitud/<int:id>/', publicar_solicitud_view, name='publicar_solicitud'),
-<<<<<<< HEAD
-    path('search/', views.search_view, name='search'),
-    path('actualizar_stock/<uuid:compra_id>/', actualizar_stock, name='actualizar_stock'),
-=======
 
->>>>>>> 95593a7ca19215849356dce8215838788d885478
+   
+    path('actualizar_stock/<uuid:compra_id>/', actualizar_stock, name='actualizar_stock'),
+
+
+
      
 ]
 
