@@ -39,13 +39,9 @@ def home_view(request):
         'productos': productos,
         'query': query,
         'user': request.user,
-        
     })
 
-def search_view(request):
-    query = request.GET.get('q', '')
-    productos = Producto.objects.filter(nombre_producto__icontains=query) if query else []
-    return render(request, 'search_results.html', {'productos': productos, 'query': query})
+
 
 def busqueda_productos(request):
 
@@ -134,16 +130,6 @@ def profile_view(request):
         # Si el usuario no está autenticado, redirigir a la página de inicio de sesión
         return redirect('login')
 
-# views.py
-
-
-
-
-
-
-
-
-
 #paginas de admin 
 @login_required
 def listaU(request):
@@ -201,10 +187,16 @@ def modificarP(request, producto_id):
     
     return render(request, 'modificarP.html', {'form': form, 'producto': producto})
 #Plantillas de menu
+from django.db.models import Sum
+
 @add_user_role_to_context
 def menu(request):
-    return render(request, 'plantilla/menu.html', {'user': request.user})
+    carrito_items_count = 0
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        carrito_items_count = CartItem.objects.filter(cart=cart).aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
 
+    return render(request, 'plantilla/menu.html', {'user': request.user, 'carrito_items_count': carrito_items_count})
 def formulario(request):
     # Redirige a la página principal si el usuario ya está autenticado
     mensaje_exito = None
@@ -242,16 +234,11 @@ def agregar_producto(request):
         form = ArticulosForm()
     return render(request, 'agregarP.html', {'form': form})
 
-
-
-
 def eliminar_producto(request, producto_id):
     producto = get_object_or_404(Articulos, id=producto_id)
     producto.delete()
     messages.success(request, 'Producto eliminado con éxito')
     return redirect('listaP')
-
-
 
 
 from django.core.mail import EmailMessage
@@ -1361,6 +1348,26 @@ from django.contrib import messages
 from .models import Producto, Cart, CartItem
 
 @login_required
+def view_cart(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    items = CartItem.objects.filter(cart=cart)
+    
+    cart_items = []
+    total = 0
+    
+    for item in items:
+        subtotal = item.product.precio_venta * item.quantity
+        total += subtotal
+        cart_items.append({
+            'product': item.product,
+            'quantity': item.quantity,
+            'subtotal': subtotal,
+            'id': item.id
+        })
+    
+    return render(request, 'cart.html', {'items': cart_items, 'total': total, 'carrito_items_count': items.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0})
+
+@login_required
 def add_to_cart(request, product_id):
     product = get_object_or_404(Producto, pk=product_id)
     cart, created = Cart.objects.get_or_create(user=request.user)
@@ -1394,26 +1401,6 @@ def decrement_quantity(request, item_id):
     else:
         item.delete()
     return redirect('view_cart')
-
-@login_required
-def view_cart(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    items = CartItem.objects.filter(cart=cart)
-    
-    cart_items = []
-    total = 0
-    
-    for item in items:
-        subtotal = item.product.precio_venta * item.quantity
-        total += subtotal
-        cart_items.append({
-            'product': item.product,
-            'quantity': item.quantity,
-            'subtotal': subtotal,
-            'id': item.id
-        })
-    
-    return render(request, 'cart.html', {'items': cart_items, 'total': total})
 
 
 from django.shortcuts import render, redirect

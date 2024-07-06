@@ -1,32 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-    {% load static %}
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        .navbar-dark {
+            background-color: #212529;
+            border: 2px solid #6c757d; /* Gray border */
+            border-radius: 5px; /* Rounded corners */
+        }
+        .navbar-dark .navbar-nav .nav-link {
+            color: #ffffff;
+        }
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #d4d4d4;
+        }
+        .navbar-dark .navbar-brand img {
+            filter: brightness(0) invert(1);
+        }
+        .navbar-dark .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .dropdown-menu {
+            background-color: #343a40; /* Darker background for dropdown */
+            border: 1px solid #6c757d; /* Gray border */
+        }
+        .dropdown-item {
+            color: #ffffff;
+        }
+        .dropdown-item:hover {
+            background-color: #6f42c1; /* Purple background on hover */
+            color: #ffffff;
+        }
         .cart-badge {
-            position: absolute;
-            top: 1px;
-            right: -5px;
             background-color: red;
             color: white;
             border-radius: 50%;
             padding: 2px 7px;
             font-size: 10px;
+            display: inline-block;
+            margin-left: 5px;
         }
         .cart-icon {
-            position: relative;
+            display: flex;
+            align-items: center;
         }
         .modal-content {
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
-            border: 2px solid #6f42c1; /* Borde morado */
+            border: 2px solid #6f42c1; /* Purple border */
         }
         .modal-header {
-            border-bottom: 2px solid #6f42c1; /* Borde morado en el header */
+            border-bottom: 2px solid #6f42c1; /* Purple border in the header */
         }
         .btn-primary {
             background-color: #6f42c1;
@@ -35,14 +64,17 @@
         .btn-primary:hover {
             background-color: #5a379d;
         }
+        .nav-link i, .dropdown-item i {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body style="background-color: rgb(238, 238, 238);">
 
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
-        <a href="/">
-            <img src="{% static 'img/SpaceLogo.png' %}" width="150px" alt="logo">
+        <a class="" href="{% url 'home' %}">
+            <img src="{% static 'img/logito.png' %}" width="150px" alt="logo">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -50,79 +82,70 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Inicio</a>
+                    <a class="nav-link " aria-current="page" href="/"><i class="fas fa-home"></i>Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Telefonía</a>
+                    <a class="nav-link " aria-current="page" href="#"><i class="fas fa-phone"></i>Telefonía</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Computación</a>
+                    <a class="nav-link" href="#"><i class="fas fa-desktop"></i>Computación</a>
                 </li>
                 {% if user.is_authenticated %}
                     {% if request.session.role == 'ADMIN' %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Administrador 
+                                <i class="fas fa-user-shield"></i>Administrador 
                             </a>
                             <ul class="dropdown-menu">
-                                
-                                <li><a class="dropdown-item" href="{% url 'listaU' %}">Usuarios</a></li>
-                                <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}">Registro de ventas</a></li>
-                                <li><a class="dropdown-item" href="{% url 'inventario' %}">   Inventario</a></li>
-
-                                <li><a class="dropdown-item" href="">Reportes</a></li>
-                                <li><a class="dropdown-item" href="{% url 'listar_proveedores' %}">Proveedor</a></li>
-                                <li><a class="dropdown-item" href="{% url 'listar_publicidades' %}">Publicidad</a></li>
-                                
-
+                                <li><a class="dropdown-item" href="{% url 'listaU' %}"><i class="fas fa-users"></i>Usuarios</a></li>
+                                <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}"><i class="fas fa-receipt"></i>Registro de ventas</a></li>
+                                <li><a class="dropdown-item" href="{% url 'inventario' %}"><i class="fas fa-boxes"></i>Inventario</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-chart-bar"></i>Reportes</a></li>
+                                <li><a class="dropdown-item" href="{% url 'listar_proveedores' %}"><i class="fas fa-truck"></i>Proveedor</a></li>
+                                <li><a class="dropdown-item" href="{% url 'listar_publicidades' %}"><i class="fas fa-ad"></i>Publicidad</a></li>
                             </ul>
                         </li>
                     {% elif request.session.role == 'BODEGA' %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Bodeguero
+                                <i class="fas fa-warehouse"></i>Bodeguero
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}">Registro de ventas</a></li>
-                                <li><a class="dropdown-item" href="{% url 'inventario' %}">Inventario</a></li>
+                                <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}"><i class="fas fa-receipt"></i>Registro de ventas</a></li>
+                                <li><a class="dropdown-item" href="{% url 'inventario' %}"><i class="fas fa-boxes"></i>Inventario</a></li>
                             </ul>
                         </li>
                     {% endif %}
                 {% endif %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Inicia sesión
+                        <i class="fas fa-sign-in-alt"></i>Inicia sesión
                     </a>
                     <ul class="dropdown-menu">
                         {% if user.is_authenticated %}
-                        <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión <i class="fa-solid fa-user-slash" style="margin-left: 5px;"></i></a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa-solid fa-user-slash"></i>Cerrar sesión</a></li>
                         {% else %}
-                        <li><a class="dropdown-item" href="#" id="loginLink"> Inicia sesión <i class="fa-solid fa-user" style="margin-left: 15px;"></i></a></li>
-                        <li><a class="dropdown-item" href="{% url 'formulario' %}">Regístrate <i class="fa-regular fa-user" style="margin-left: 30px;"></i></a></li>
+                        <li><a class="dropdown-item" href="#" id="loginLink"><i class="fa-solid fa-user"></i>Inicia sesión</a></li>
+                        <li><a class="dropdown-item" href="{% url 'formulario' %}"><i class="fa-regular fa-user"></i>Regístrate</a></li>
                         {% endif %}
-                        <li><a class="dropdown-item" href="{% url 'profile' %}">Mi cuenta <i class="fa-solid fa-id-card" style="margin-left: 35px;"></i></a></li>
+                        <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fa-solid fa-id-card"></i>Mi cuenta</a></li>
                     </ul>
                 </li>
                 <ul class="navbar-nav mb-2 mb-lg-0">
-                  <li class="nav-item">
-                      <a class="nav-link cart-icon" href="{% url 'ver_carrito' %}">
-                        <i class="bi bi-cart"></i>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
-                          <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
-                        </svg>
-                        {% if carrito_items_count %}
-                          <span class="cart-badge">{{ carrito_items_count }}</span>
-                        {% endif %}
-                      </a>
-                  </li>
-              </ul>
+                    <li class="nav-item">
+                        <a class="nav-link cart-icon" href="{% url 'view_cart' %}">
+                            <i class="fas fa-shopping-cart"></i>Carrito
+                            {% if carrito_items_count %}
+                            <span class="cart-badge">{{ carrito_items_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
             </ul>
-            <form class="d-flex" role="search" action="{% url 'home' %}" method="get">
-                <input class="form-control me-2" type="search" name="q" placeholder="Buscar producto..." aria-label="Search" value="{{ request.GET.q }}">
-                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            <form class="d-flex" role="search" action="/" method="get">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q">
+                <button class="btn btn-outline-success" type="submit"><i class="fas fa-search"></i>Buscar</button>
             </form>
-            
-            
         </div>
     </div>
 </nav>
@@ -139,38 +162,38 @@
                 <form method="post" action="{% url 'login' %}">
                     {% csrf_token %}
                     <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="floatingInput" name="email" placeholder="Correo electrónico" required>
-                        <label for="floatingInput">Correo electrónico</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Contraseña" required>
-                        <label for="floatingPassword">Contraseña</label>
-                    </div>
-                    <div class="text-center">
-                        <a class="link d-block mb-2" href="recuperar_contraseña">¿Olvidaste tu contraseña?</a>
-                        <p class="texto mb-2">¿No tienes cuenta? <a class="link" href="{% url 'formulario' %}">Regístrate</a></p>
-                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-                    </div>
-                </form>
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert {% if message.tags == "success" %}alert-success{% else %}alert-danger{% endif %} mt-3">
-                            <p>{{ message }}</p>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-    </div>
+                        <input type="email" class="form-control" id="floatingInput" name="email
+" placeholder="Correo electrónico" required>
+<label for="floatingInput">Correo electrónico</label>
+</div>
+<div class="form-floating mb-3">
+<input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Contraseña" required>
+<label for="floatingPassword">Contraseña</label>
+</div>
+<div class="text-center">
+<a class="link d-block mb-2" href="recuperar_contraseña">¿Olvidaste tu contraseña?</a>
+<p class="texto mb-2">¿No tienes cuenta? <a class="link" href="{% url 'formulario' %}">Regístrate</a></p>
+<button type="submit" class="btn btn-primary">Iniciar sesión</button>
+</div>
+</form>
+{% if messages %}
+{% for message in messages %}
+<div class="alert {% if message.tags == "success" %}alert-success{% else %}alert-danger{% endif %} mt-3">
+<p>{{ message }}</p>
+</div>
+{% endfor %}
+{% endif %}
+</div>
+</div>
 </div>
 
+</div>
 <!-- Scripts de Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>  
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>  
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://kit.fontawesome.com/32b703ccc5.js" crossorigin="anonymous"></script>
-
 <script>
     document.getElementById('loginLink').addEventListener('click', function(event) {
         event.preventDefault();
@@ -178,6 +201,5 @@
         loginModal.show();
     });
 </script>
-
 </body>
 </html>

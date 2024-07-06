@@ -1,15 +1,12 @@
 # context_processors.py
-from menu.models import Carrito, CarritoItem
-
+from .models import Cart, CartItem
+from django.db.models import Sum
 def carrito_items_count(request):
     if request.user.is_authenticated:
-        try:
-            carrito = Carrito.objects.get(usuario=request.user)
-            count = CarritoItem.objects.filter(carrito=carrito).count()
-        except Carrito.DoesNotExist:
-            count = 0
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        carrito_items_count = CartItem.objects.filter(cart=cart).aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
     else:
-        count = 0
+        carrito_items_count = 0
     return {
-        'carrito_items_count': count
+        'carrito_items_count': carrito_items_count
     }
