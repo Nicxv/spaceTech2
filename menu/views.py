@@ -1354,10 +1354,12 @@ def view_cart(request):
     
     cart_items = []
     total = 0
+    total_quantity = 0  # Variable para mantener la cantidad total de productos
     
     for item in items:
         subtotal = item.product.precio_venta * item.quantity
         total += subtotal
+        total_quantity += item.quantity  # Sumar la cantidad de cada ítem al total
         cart_items.append({
             'product': item.product,
             'quantity': item.quantity,
@@ -1365,7 +1367,13 @@ def view_cart(request):
             'id': item.id
         })
     
-    return render(request, 'cart.html', {'items': cart_items, 'total': total, 'carrito_items_count': items.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0})
+    return render(request, 'cart.html', {
+        'items': cart_items,
+        'total': total,
+        'carrito_items_count': total_quantity,
+        'total_products': total_quantity  # Pasar la cantidad total de productos a la plantilla
+    })
+
 
 @login_required
 def add_to_cart(request, product_id):
