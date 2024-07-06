@@ -112,7 +112,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}"><i class="fas fa-receipt"></i>Registro de ventas</a></li>
-                                <li><a class="dropdown-item" href="{% url 'inventario' %}"><i class="fas fa-boxes"></i>Inventario</a></li>
+                                <li><a class="dropdown-item" href="{% url 'recepcion_compra' %}"><i class="fas fa-chart-bar"></i>Orden compra</a></li>
                             </ul>
                         </li>
                     {% endif %}
@@ -174,7 +174,7 @@
                         <p class="texto mb-2">¿No tienes cuenta? <a class="link" href="{% url 'formulario' %}">Regístrate</a></p>
                         <button type="submit" class="btn btn-primary">Iniciar sesión</button>
                     </div>
-<<<<<<< HEAD
+
                 </form>
                 {% if messages %}
                     {% for message in messages %}
@@ -186,18 +186,12 @@
             </div>
         </div>
     </div>
-=======
+
             </form>
-{% if messages %}
-{% for message in messages %}
-                <div class="alert {% if message.tags == "success" %}alert-success{% else %}alert-danger{% endif %} mt-3">
-                    <p>{{ message }}</p>
-               </div>
-{% endfor %}
-{% endif %}
+
           </div>
       </div>
->>>>>>> 9da62b422fc88fa34f54b94536ad53e7cc0184da
+
 </div>
 
 <!-- Scripts de Bootstrap -->
