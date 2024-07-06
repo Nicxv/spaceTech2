@@ -100,7 +100,7 @@
                                 <li><a class="dropdown-item" href="{% url 'listaU' %}"><i class="fas fa-users"></i>Usuarios</a></li>
                                 <li><a class="dropdown-item" href="{% url 'gestion_ventas' %}"><i class="fas fa-receipt"></i>Registro de ventas</a></li>
                                 <li><a class="dropdown-item" href="{% url 'inventario' %}"><i class="fas fa-boxes"></i>Inventario</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-chart-bar"></i>Reportes</a></li>
+                                <li><a class="dropdown-item" href="{% url 'recepcion_compra' %}"><i class="fas fa-chart-bar"></i>Orden compra</a></li>
                                 <li><a class="dropdown-item" href="{% url 'listar_proveedores' %}"><i class="fas fa-truck"></i>Proveedor</a></li>
                                 <li><a class="dropdown-item" href="{% url 'listar_publicidades' %}"><i class="fas fa-ad"></i>Publicidad</a></li>
                             </ul>
@@ -162,32 +162,31 @@
                 <form method="post" action="{% url 'login' %}">
                     {% csrf_token %}
                     <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="floatingInput" name="email
-" placeholder="Correo electrónico" required>
-<label for="floatingInput">Correo electrónico</label>
-</div>
-<div class="form-floating mb-3">
-<input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Contraseña" required>
-<label for="floatingPassword">Contraseña</label>
-</div>
-<div class="text-center">
-<a class="link d-block mb-2" href="recuperar_contraseña">¿Olvidaste tu contraseña?</a>
-<p class="texto mb-2">¿No tienes cuenta? <a class="link" href="{% url 'formulario' %}">Regístrate</a></p>
-<button type="submit" class="btn btn-primary">Iniciar sesión</button>
-</div>
-</form>
-{% if messages %}
-{% for message in messages %}
-<div class="alert {% if message.tags == "success" %}alert-success{% else %}alert-danger{% endif %} mt-3">
-<p>{{ message }}</p>
-</div>
-{% endfor %}
-{% endif %}
-</div>
-</div>
+                        <input type="email" class="form-control" id="floatingInput" name="email" placeholder="Correo electrónico" required>
+                        <label for="floatingInput">Correo electrónico</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Contraseña" required>
+                        <label for="floatingPassword">Contraseña</label>
+                    </div>
+                    <div class="text-center">
+                        <a class="link d-block mb-2" href="recuperar_contraseña">¿Olvidaste tu contraseña?</a>
+                        <p class="texto mb-2">¿No tienes cuenta? <a class="link" href="{% url 'formulario' %}">Regístrate</a></p>
+                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                    </div>
+                </form>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == "success" %}alert-success{% else %}alert-danger{% endif %} mt-3">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 
-</div>
 <!-- Scripts de Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>  

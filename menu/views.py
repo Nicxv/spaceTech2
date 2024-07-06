@@ -1151,12 +1151,14 @@ def actualizar_stock(request, compra_id):
 
     for detalle in detalles:
         cantidad_llegada_key = f'cantidad_llegada_{detalle.id}'
-        cantidad_llegada = int(request.POST.get(cantidad_llegada_key, 0))
-        detalle.cantidad_llegada = cantidad_llegada
+        nueva_cantidad_llegada = int(request.POST.get(cantidad_llegada_key, 0))
+        diferencia = nueva_cantidad_llegada - (detalle.cantidad_llegada or 0)
+        
+        detalle.cantidad_llegada = nueva_cantidad_llegada
         detalle.save()
 
         producto = detalle.producto
-        producto.stock_actual = (producto.stock_actual or 0) + detalle.cantidad_llegada
+        producto.stock_actual = (producto.stock_actual or 0) + diferencia
         producto.save()
 
         if detalle.cantidad_llegada < detalle.cantidad:
