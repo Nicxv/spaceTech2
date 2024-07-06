@@ -140,6 +140,7 @@ class DetalleCompra(models.Model):
     cantidad = models.IntegerField()
     precio_costo = models.IntegerField()
     sub_total = models.IntegerField()
+    cantidad_llegada = models.IntegerField(default=0, verbose_name='Cantidad Llegada')
 
     def __str__(self):
         return f'Detalle {self.correlativo} de {self.orden_compra}'

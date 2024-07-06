@@ -1050,8 +1050,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Producto, Proveedor, Compra, DetalleCompra
 from datetime import datetime
 import uuid
-
-
 @require_POST
 def crear_compra(request, proveedor_id):
     proveedor = get_object_or_404(Proveedor, pk=proveedor_id)
@@ -1093,11 +1091,97 @@ def crear_compra(request, proveedor_id):
                 correlativo=DetalleCompra.objects.filter(orden_compra=compra).count() + 1
             )
 
+    # Enviar correo electrónico al proveedor con los detalles de la compra
+    proveedor_email = proveedor.email_proveedor
+
+    pdf = PDFFF()
+    pdf.add_page()
+
+    pdf.chapter_title("Detalles de la Transacción")
+    pdf.add_detail("Orden de Compra", str(compra.id_orden_compra))
+    pdf.add_detail("Fecha de Transacción", compra.fecha.strftime("%d/%m/%Y"))
+    pdf.add_detail("Monto Total", format_price(compra.total))
+
+    pdf.chapter_title("Detalles de la Compra")
+    pdf.add_detail("ID Orden de Compra", str(compra.id_orden_compra))
+    pdf.add_detail("Nombre del Proveedor", compra.proveedor.nombre_empresa)
+    pdf.add_detail("Email del Proveedor", proveedor_email)
+
+    pdf.chapter_title("Totales")
+    pdf.add_detail("Subtotal", format_price(compra.sub_total))
+    pdf.add_detail("IVA", format_price(compra.iva))
+    pdf.add_detail("Total", format_price(compra.total))
+
+    pdf.chapter_title("Productos Comprados")
+    for detalle in compra.detalles.all():
+        pdf.multi_cell(0, 10, f"{detalle.producto.nombre_producto} - {detalle.cantidad} x {format_price(detalle.precio_costo)}")
+
+    pdf_buffer = BytesIO()
+    pdf_output = pdf.output(dest='S').encode('latin1')
+    pdf_buffer.write(pdf_output)
+    pdf_buffer.seek(0)
+
+    email = EmailMessage(
+        'Boleta de Compra',
+        'Estimado/a proveedor,\n\nAdjuntamos a este correo la boleta de la compra realizada.\n\nSaludos cordiales,\n\nEl equipo de SpaceTech',
+        settings.DEFAULT_FROM_EMAIL,
+        [proveedor_email],
+    )
+    email.attach(f'Compra_{compra.id_orden_compra}.pdf', pdf_buffer.getvalue(), 'application/pdf')
+
+    try:
+        email.send()
+        messages.success(request, 'Boleta enviada por email exitosamente al proveedor.')
+    except Exception as e:
+        messages.error(request, f'Error al enviar el email: {e}')
+
     return redirect('recepcion_compra')
 
+
+
 def recepcion_compra(request):
+    if request.method == 'POST':
+        compra_id = request.POST.get('compra_id')
+        compra = get_object_or_404(Compra, id_orden_compra=compra_id)
+
+        for detalle in compra.detalles.all():
+            cantidad_llegada = int(request.POST.get(f'cantidad_llegada_{detalle.id}', 0))
+            detalle.cantidad_llegada = cantidad_llegada
+            detalle.save()
+
+        messages.success(request, 'Cantidad llegada actualizada correctamente.')
+        return redirect('recepcion_compra')
+
     compras = Compra.objects.all().order_by('-fecha')
     return render(request, 'recepcion_compra.html', {'compras': compras})
+
+@require_POST
+def actualizar_stock(request, compra_id):
+    compra = get_object_or_404(Compra, id_orden_compra=compra_id)
+    detalles = compra.detalles.all()
+
+    todos_productos_llegaron = True
+
+    for detalle in detalles:
+        cantidad_llegada_key = f'cantidad_llegada_{detalle.id}'
+        cantidad_llegada = int(request.POST.get(cantidad_llegada_key, 0))
+        detalle.cantidad_llegada = cantidad_llegada
+        detalle.save()
+
+        producto = detalle.producto
+        producto.stock_actual = (producto.stock_actual or 0) + detalle.cantidad_llegada
+        producto.save()
+
+        if detalle.cantidad_llegada < detalle.cantidad:
+            todos_productos_llegaron = False
+
+    if todos_productos_llegaron:
+        compra.delete()
+        messages.success(request, 'Todos los productos llegaron y la orden de compra fue eliminada.')
+    else:
+        messages.success(request, 'Stock actualizado correctamente.')
+
+    return redirect('inventario')
 
 
 @require_POST
@@ -1189,61 +1273,7 @@ def descargar_pdf2(request, compra_id):
     
     return response
 
-@require_POST
-def aceptar_compra(request, compra_id):
-    compra = get_object_or_404(Compra, id_orden_compra=compra_id)
-    proveedor_email = compra.proveedor.email_proveedor
 
-    # Crear el PDF
-    pdf = PDFFF()
-    pdf.add_page()
-
-    pdf.chapter_title("Detalles de la Transacción")
-    pdf.add_detail("Orden de Compra", str(compra.id_orden_compra))
-    pdf.add_detail("Fecha de Transacción", compra.fecha.strftime("%d/%m/%Y"))
-    pdf.add_detail("Monto Total", format_price(compra.total))
-
-    pdf.chapter_title("Detalles de la Compra")
-    pdf.add_detail("ID Orden de Compra", str(compra.id_orden_compra))
-    pdf.add_detail("Nombre del Proveedor", compra.proveedor.nombre_empresa)
-    pdf.add_detail("Email del Proveedor", proveedor_email)
-
-    pdf.chapter_title("Totales")
-    pdf.add_detail("Subtotal", format_price(compra.sub_total))
-    pdf.add_detail("IVA", format_price(compra.iva))
-    pdf.add_detail("Total", format_price(compra.total))
-
-    pdf.chapter_title("Productos Comprados")
-    for detalle in compra.detalles.all():
-        pdf.multi_cell(0, 10, f"{detalle.producto.nombre_producto} - {detalle.cantidad} x {format_price(detalle.precio_costo)}")
-
-        # Actualizar el inventario
-        producto = detalle.producto
-        producto.stock_actual = (producto.stock_actual or 0) + detalle.cantidad
-        producto.save()
-
-    # Guardar el PDF en un BytesIO buffer
-    pdf_buffer = BytesIO()
-    pdf_output = pdf.output(dest='S').encode('latin1')
-    pdf_buffer.write(pdf_output)
-    pdf_buffer.seek(0)
-
-    # Crear el correo electrónico
-    email = EmailMessage(
-        'Boleta de Compra',
-        'Estimado/a proveedor,\n\nAdjuntamos a este correo la boleta de la compra realizada.\n\nSaludos cordiales,\n\nEl equipo de SpaceTech',
-        settings.DEFAULT_FROM_EMAIL,
-        [proveedor_email],
-    )
-    email.attach(f'Compra_{compra.id_orden_compra}.pdf', pdf_buffer.getvalue(), 'application/pdf')
-
-    try:
-        email.send()
-        messages.success(request, 'Boleta enviada por email exitosamente al proveedor.')
-    except Exception as e:
-        messages.error(request, f'Error al enviar el email: {e}')
-
-    return redirect('inventario')
 
 
 

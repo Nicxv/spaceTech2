@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from spacetech import settings
 from . import views
 from django.urls import path
-from .views import CustomPasswordResetConfirmView, aceptar_compra, add_to_cart, checkout, crear_producto, crear_proveedor, decrement_quantity, descargar_pdf2, editar_proveedor, editar_publicidad, eliminar_proveedor, eliminar_publicidad, eliminar_solicitud_view,  enviar_publicidad, formulario_img, increment_quantity, inventario, listar_publicidades, publicar_solicitud_view,   remove_from_cart, remover_de_home, solicitud_publicidad_view, subir_a_home, transbank_response_publicidad,  ver_productos_proveedor, ver_solicitudes_view, view_cart
+from .views import CustomPasswordResetConfirmView, actualizar_stock,  add_to_cart, checkout, crear_producto, crear_proveedor, decrement_quantity, descargar_pdf2, editar_proveedor, editar_publicidad, eliminar_proveedor, eliminar_publicidad, eliminar_solicitud_view,  enviar_publicidad, formulario_img, increment_quantity, inventario, listar_publicidades, publicar_solicitud_view,   remove_from_cart, remover_de_home, solicitud_publicidad_view, subir_a_home, transbank_response_publicidad,  ver_productos_proveedor, ver_solicitudes_view, view_cart
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls import path
@@ -87,7 +87,7 @@ urlpatterns = [
 
     path('compra/<uuid:compra_id>/descargar_pdf2/', descargar_pdf2, name='descargar_pdf2'),
 
-    path('compra/<uuid:compra_id>/aceptar/', aceptar_compra, name='aceptar_compra'),
+   
     path('inventario/', views.inventario, name='inventario'),
      path('subir_a_home/<int:producto_id>/', subir_a_home, name='subir_a_home'),
      path('remover_de_home/<int:producto_id>/', remover_de_home, name='remover_de_home'),
@@ -122,7 +122,7 @@ urlpatterns = [
     path('transbank_response_publicidad/', transbank_response_publicidad, name='transbank_response_publicidad'),
     path('publicar_solicitud/<int:id>/', publicar_solicitud_view, name='publicar_solicitud'),
     path('search/', views.search_view, name='search'),
-
+    path('actualizar_stock/<uuid:compra_id>/', actualizar_stock, name='actualizar_stock'),
      
 ]
 
