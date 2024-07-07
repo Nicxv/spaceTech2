@@ -26,7 +26,7 @@
                         <th>Nombre del Producto</th>
                         <th>Cantidad Esperada</th>
                         <th>Stock Actual</th>
-                        <th>Stock Mínimo</th>
+                       
                         <th>Precio de Costo</th>
                         <th>Precio de Venta</th>
                         <th>Foto del Producto</th>
@@ -43,7 +43,7 @@
                             <td>{{ producto.nombre_producto }}</td>
                             <td>{{ cantidades_esperadas|get_value_from_dict:producto.pk }}</td>
                             <td><input type="number" name="stock_actual" value="{{ producto.stock_actual }}" class="form-control" readonly></td>
-                            <td><input type="number" name="stock_minimo" value="{{ producto.stock_minimo }}" class="form-control"></td>
+                           
                             <td>{{ producto.precio_costo }}</td>
                             <td><input type="number" name="precio_venta" value="{{ producto.precio_venta }}" class="form-control"></td>
                             <td>
