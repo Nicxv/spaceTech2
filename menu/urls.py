@@ -124,7 +124,7 @@ urlpatterns = [
     path('publicar_solicitud/<int:id>/', publicar_solicitud_view, name='publicar_solicitud'),
 
    
-    path('actualizar_stock/<uuid:compra_id>/', actualizar_stock, name='actualizar_stock'),
+   path('actualizar_stock/<uuid:compra_id>/', views.actualizar_stock, name='actualizar_stock'),
 
 
 

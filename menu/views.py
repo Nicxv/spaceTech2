@@ -1045,7 +1045,6 @@ def crear_compra(request, proveedor_id):
     total_iva = float(request.POST.get('total_iva', 0))
     grand_total = float(request.POST.get('grand_total', 0))
 
-    # Verifica si no hay productos seleccionados
     if total_subtotal == 0 or total_iva == 0 or grand_total == 0:
         messages.error(request, 'No se puede realizar la compra sin productos seleccionados.')
         return redirect('ver_productos_proveedor', proveedor_id=proveedor_id)
@@ -1066,7 +1065,7 @@ def crear_compra(request, proveedor_id):
         subtotal_key = f'subtotal_{producto.id_producto}'
 
         cantidad = int(request.POST.get(cantidad_key, 0))
-        if cantidad > 0:  # Solo crea detalles si hay cantidad
+        if cantidad > 0:
             precio_costo = float(request.POST.get(precio_key, 0))
             sub_total = float(request.POST.get(subtotal_key, 0))
             DetalleCompra.objects.create(
@@ -1078,9 +1077,7 @@ def crear_compra(request, proveedor_id):
                 correlativo=DetalleCompra.objects.filter(orden_compra=compra).count() + 1
             )
 
-    # Enviar correo electrónico al proveedor con los detalles de la compra
     proveedor_email = proveedor.email_proveedor
-
     pdf = PDFFF()
     pdf.add_page()
 
@@ -1125,7 +1122,6 @@ def crear_compra(request, proveedor_id):
     return redirect('recepcion_compra')
 
 
-
 def recepcion_compra(request):
     if request.method == 'POST':
         compra_id = request.POST.get('compra_id')
@@ -1141,6 +1137,7 @@ def recepcion_compra(request):
 
     compras = Compra.objects.all().order_by('-fecha')
     return render(request, 'recepcion_compra.html', {'compras': compras})
+
 
 @require_POST
 def actualizar_stock(request, compra_id):
