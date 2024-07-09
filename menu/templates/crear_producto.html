@@ -24,7 +24,7 @@
             color: #FFFFFF; /* Texto blanco para etiquetas */
         }
         input[type="text"], input[type="number"], input[type="file"] {
-            background-color: #2E2E46; /* Fondo oscuro para inputs */
+            background-color: #ffffff; /* Fondo oscuro para inputs */
             color: #FFFFFF; /* Texto blanco para inputs */
             border-color: #4F4F6F; /* Borde de inputs */
         }
@@ -50,6 +50,8 @@
                 <input type="file" class="form-control" id="id_foto_producto" name="foto_producto">
             </div>
             <button type="submit" class="btn btn-primary">Guardar Producto</button>
+            <a href="{% url 'listar_proveedores' %}" class="btn btn-danger">Cancelar</a>
+
         </form>
     </div>
     <!-- Bootstrap JS -->
