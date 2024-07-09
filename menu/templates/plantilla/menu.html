@@ -131,13 +131,20 @@
                 </li>
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link cart-icon" href="{% url 'view_cart' %}">
-                            <i class="fas fa-shopping-cart"></i>Carrito
-                            {% if carrito_items_count %}
-                            <span class="cart-badge">{{ carrito_items_count }}</span>
-                            {% endif %}
-                        </a>
+                        {% if user.is_authenticated %}
+                            <a class="nav-link cart-icon" href="{% url 'view_cart' %}">
+                                <i class="fas fa-shopping-cart"></i>Carrito
+                                {% if carrito_items_count %}
+                                    <span class="cart-badge">{{ carrito_items_count }}</span>
+                                {% endif %}
+                            </a>
+                        {% else %}
+                            <a class="nav-link cart-icon" href="#" id="cartLoginLink">
+                                <i class="fas fa-shopping-cart"></i>Carrito
+                            </a>
+                        {% endif %}
                     </li>
+                    
                 </ul>
             </ul>
             <form class="d-flex" role="search" action="/" method="get">
@@ -168,7 +175,7 @@
                         <label for="floatingPassword">Contraseña</label>
                     </div>
                     <div class="text-center">
-                        <a class="link d-block mb-2" href="recuperar_contraseña">¿Olvidaste tu contraseña?</a>
+                        
                         <p class="texto mb-2">¿No tienes cuenta? <a class="link" href="{% url 'formulario' %}">Regístrate</a></p>
                         <button type="submit" class="btn btn-primary">Iniciar sesión</button>
                     </div>
@@ -202,6 +209,12 @@
 <script src="https://kit.fontawesome.com/32b703ccc5.js" crossorigin="anonymous"></script>
 <script>
     document.getElementById('loginLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+        loginModal.show();
+    });
+
+    document.getElementById('cartLoginLink').addEventListener('click', function(event) {
         event.preventDefault();
         var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
         loginModal.show();
