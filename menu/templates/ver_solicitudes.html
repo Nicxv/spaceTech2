@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ver Solicitudes de Publicidad</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
     {% include "plantilla/menu.html" %}
@@ -35,14 +36,14 @@
                     <td>{{ solicitud.segundos }} segundos</td>
                     <td>${{ solicitud.precio }}</td>
                     <td>
-                        <form action="{% url 'publicar_solicitud' solicitud.id %}" method="post" style="display:inline;">
+                        <button type="button" class="btn btn-success" onclick="confirmPublicar({{ solicitud.id }})">Publicar</button>
+                        
+                        <button type="button" class="btn btn-danger" onclick="confirmEliminar({{ solicitud.id }})">Eliminar</button>
+                        <form id="publicar-form-{{ solicitud.id }}" action="{% url 'publicar_solicitud' solicitud.id %}" method="post" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-success">Publicar</button>
                         </form>
-                        <button type="button" class="btn btn-warning reject-btn">Rechazar</button>
-                        <form action="{% url 'eliminar_solicitud' solicitud.id %}" method="post" style="display:inline;">
+                        <form id="eliminar-form-{{ solicitud.id }}" action="{% url 'eliminar_solicitud' solicitud.id %}" method="post" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
                         </form>
                     </td>
                 </tr>
@@ -52,5 +53,57 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+        function confirmPublicar(solicitudId) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, publicar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('publicar-form-' + solicitudId).submit();
+                }
+            });
+        }
+
+        function confirmEliminar(solicitudId) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('eliminar-form-' + solicitudId).submit();
+                }
+            });
+        }
+
+        function showSuccessAlert(message) {
+            Swal.fire({
+                title: '¡Éxito!',
+                text: message,
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+
+        // Check if a success message is present in the context and show the success alert
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    showSuccessAlert("{{ message }}");
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
 </body>
 </html>
