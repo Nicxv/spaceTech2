@@ -7,6 +7,8 @@
     <title>Recepción de Compra</title>
 </head>
 <body>
+    {% include "plantilla/menu.html" %}
+
     <h1>Compra Realizada con Éxito</h1>
     <p>Proveedor: {{ compra.proveedor.nombre_empresa }}</p>
     <p>Subtotal: ${{ compra.sub_total }}</p>

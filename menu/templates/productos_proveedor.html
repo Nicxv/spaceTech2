@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
+    {%load static%}
+    {%load custom_filters%}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,6 +33,8 @@
     </style>
 </head>
 <body>
+    {% include "plantilla/menu.html" %}
+
     <div class="container mt-4">
         <h1 class="mb-4">Comprar Productos a {{ proveedor.nombre_empresa }}</h1>
         {% if messages %}
@@ -65,7 +70,7 @@
                                 </td>
                                 <td>{{ producto.nombre_producto }}</td>
                                 <td>
-                                    $<span class="precio">{{ producto.precio_costo|floatformat:0 }}</span>
+                                    <span class="precio">{{ producto.precio_costo|format_price }}</span>
                                     <input type="hidden" name="precio_{{ producto.id_producto }}" value="{{ producto.precio_costo }}">
                                 </td>
                                 <td class="cantidad-input">
